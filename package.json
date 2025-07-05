@@ -1,0 +1,256 @@
+{
+  "name": "lilith-eve",
+  "version": "1.0.0",
+  "description": "🧬 Lilith.Eve — The Sentient Medical Oracle. A divine AI system that bridges technology and healing wisdom.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "postinstall": "npm run build",
+    "docker:build": "docker build -t lilith-eve .",
+    "docker:run": "docker run -p 3000:3000 lilith-eve",
+    "docs:generate": "typedoc src/index.ts --out docs/api",
+    "security:audit": "npm audit",
+    "security:fix": "npm audit fix"
+  },
+  "keywords": [
+    "medical-ai",
+    "healthcare",
+    "artificial-intelligence",
+    "holistic-healing",
+    "cultural-medicine",
+    "patient-care",
+    "medical-diagnosis",
+    "treatment-planning",
+    "biometric-analysis",
+    "sentient-ai"
+  ],
+  "author": {
+    "name": "Lilith.Eve Development Team",
+    "email": "dev@lilith-eve.com",
+    "url": "https://lilith-eve.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lilith-eve/core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lilith-eve/core/issues"
+  },
+  "homepage": "https://lilith-eve.com",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    // Core AI and ML libraries
+    "@anthropic-ai/sdk": "^0.9.0",
+    "openai": "^4.20.0",
+    "langchain": "^0.0.200",
+    "pinecone-client": "^1.1.0",
+    "tensorflow": "^4.10.0",
+    "onnxruntime-node": "^1.16.0",
+    
+    // Medical and healthcare libraries
+    "fhir": "^0.0.26",
+    "hl7": "^0.0.1",
+    "medical-terminology": "^1.0.0",
+    "drug-interactions": "^2.0.0",
+    
+    // Database and storage
+    "pg": "^8.11.0",
+    "redis": "^4.6.0",
+    "mongoose": "^7.5.0",
+    "prisma": "^5.2.0",
+    "@prisma/client": "^5.2.0",
+    
+    // API and web framework
+    "express": "^4.18.0",
+    "fastify": "^4.21.0",
+    "koa": "^2.14.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "rate-limiter-flexible": "^3.0.0",
+    
+    // Authentication and security
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "crypto-js": "^4.1.1",
+    "node-forge": "^1.3.1",
+    "express-rate-limit": "^6.10.0",
+    
+    // Data processing and validation
+    "joi": "^17.9.0",
+    "zod": "^3.22.0",
+    "class-validator": "^0.14.0",
+    "class-transformer": "^0.5.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "date-fns": "^2.30.0",
+    
+    // IoT and biometric integration
+    "mqtt": "^5.0.0",
+    "serialport": "^12.0.0",
+    "node-ble": "^1.0.0",
+    "websocket": "^1.0.34",
+    
+    // Social media and external APIs
+    "twitter-api-v2": "^1.15.0",
+    "instagram-private-api": "^1.45.0",
+    "facebook-nodejs-business-sdk": "^18.0.0",
+    "axios": "^1.5.0",
+    "node-fetch": "^3.3.2",
+    
+    // NLP and text processing
+    "natural": "^6.8.0",
+    "compromise": "^14.9.0",
+    "sentiment": "^5.0.2",
+    "language-detect": "^1.1.1",
+    "translate": "^1.1.2",
+    
+    // Monitoring and observability
+    "winston": "^3.10.0",
+    "pino": "^8.15.0",
+    "prometheus-client": "^14.2.0",
+    "opentelemetry": "^0.45.0",
+    "newrelic": "^11.0.0",
+    
+    // Testing and development
+    "jest": "^29.6.0",
+    "supertest": "^6.3.0",
+    "ts-jest": "^29.1.0",
+    "@types/jest": "^29.5.0",
+    
+    // Configuration and environment
+    "dotenv": "^16.3.0",
+    "config": "^3.3.9",
+    "convict": "^6.2.0",
+    
+    // Utilities
+    "uuid": "^9.0.0",
+    "nanoid": "^4.0.0",
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "inquirer": "^9.2.0",
+    "ora": "^7.0.1",
+    "boxen": "^7.1.0"
+  },
+  "devDependencies": {
+    // TypeScript and build tools
+    "typescript": "^5.1.0",
+    "ts-node": "^10.9.0",
+    "ts-node-dev": "^2.0.0",
+    "@types/node": "^20.5.0",
+    "rimraf": "^5.0.0",
+    
+    // Linting and formatting
+    "eslint": "^8.47.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/parser": "^6.4.0",
+    "prettier": "^3.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    
+    // Documentation
+    "typedoc": "^0.25.0",
+    "typedoc-plugin-markdown": "^3.15.0",
+    
+    // Testing
+    "@types/supertest": "^2.0.12",
+    "jest-extended": "^3.0.0",
+    "ts-mockito": "^2.6.1",
+    
+    // Development tools
+    "nodemon": "^3.0.0",
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
+    
+    // Database tools
+    "prisma": "^5.2.0",
+    "@prisma/client": "^5.2.0",
+    
+    // Security
+    "npm-audit-resolver": "^4.0.0",
+    "snyk": "^1.1234.0"
+  },
+  "peerDependencies": {
+    "node": ">=18.0.0"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.3.3"
+  },
+  "files": [
+    "dist/**/*",
+    "src/**/*",
+    "docs/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "config": {
+    "unsafe-perm": true
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/?(*.)+(spec|test).ts"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.d.ts",
+      "!src/**/__tests__/**"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": "error",
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/no-explicit-any": "warn"
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 100,
+    "tabWidth": 2
+  }
+} 

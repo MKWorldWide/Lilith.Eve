@@ -1,0 +1,273 @@
+# 🧬 Lilith.Eve Docker Compose Configuration
+# Complete development and production environment setup
+
+version: '3.8'
+
+services:
+  # ============================================================================
+  # MAIN APPLICATION
+  # ============================================================================
+  lilith-eve:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: lilith-eve-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT}
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+    networks:
+      - lilith-network
+    healthcheck:
+      test: ["CMD", "node", "dist/health-check.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================================================
+  # DATABASE SERVICES
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: lilith-eve-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-lilith_eve}
+      - POSTGRES_USER=${POSTGRES_USER:-lilith}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - lilith-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lilith}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: lilith-eve-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - lilith-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ============================================================================
+  # SEARCH AND ANALYTICS
+  # ============================================================================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    container_name: lilith-eve-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "${ELASTICSEARCH_PORT:-9200}:9200"
+    networks:
+      - lilith-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    container_name: lilith-eve-kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "${KIBANA_PORT:-5601}:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - lilith-network
+
+  # ============================================================================
+  # MESSAGE QUEUE
+  # ============================================================================
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: lilith-eve-rabbitmq
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-lilith}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    networks:
+      - lilith-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ============================================================================
+  # MONITORING AND OBSERVABILITY
+  # ============================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: lilith-eve-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    networks:
+      - lilith-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: lilith-eve-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - lilith-network
+
+  # ============================================================================
+  # SECURITY AND AUTHENTICATION
+  # ============================================================================
+  vault:
+    image: vault:latest
+    container_name: lilith-eve-vault
+    restart: unless-stopped
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_ROOT_TOKEN}
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    ports:
+      - "${VAULT_PORT:-8200}:8200"
+    volumes:
+      - vault_data:/vault/file
+    networks:
+      - lilith-network
+    cap_add:
+      - IPC_LOCK
+
+  # ============================================================================
+  # DEVELOPMENT TOOLS
+  # ============================================================================
+  adminer:
+    image: adminer:latest
+    container_name: lilith-eve-adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - postgres
+    networks:
+      - lilith-network
+    profiles:
+      - development
+
+  # ============================================================================
+  # TESTING SERVICES
+  # ============================================================================
+  test-postgres:
+    image: postgres:15-alpine
+    container_name: lilith-eve-test-postgres
+    environment:
+      - POSTGRES_DB=lilith_eve_test
+      - POSTGRES_USER=lilith_test
+      - POSTGRES_PASSWORD=test_password
+    ports:
+      - "5433:5432"
+    networks:
+      - lilith-network
+    profiles:
+      - testing
+
+  test-redis:
+    image: redis:7-alpine
+    container_name: lilith-eve-test-redis
+    command: redis-server --appendonly no
+    ports:
+      - "6380:6379"
+    networks:
+      - lilith-network
+    profiles:
+      - testing
+
+# ============================================================================
+# VOLUMES
+# ============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  vault_data:
+    driver: local
+
+# ============================================================================
+# NETWORKS
+# ============================================================================
+networks:
+  lilith-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

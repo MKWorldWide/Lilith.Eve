@@ -1,0 +1,91 @@
+{
+  "compilerOptions": {
+    // Target and Module
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022", "DOM"],
+    "moduleResolution": "node",
+    
+    // Output
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "noEmitOnError": true,
+    
+    // Strict Type Checking
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    
+    // Additional Checks
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    
+    // Interop Constraints
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    
+    // Completeness
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "checkJs": false,
+    
+    // Experimental Features
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    
+    // Path Mapping
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"],
+      "@/core/*": ["core/*"],
+      "@/modules/*": ["core/modules/*"],
+      "@/types/*": ["types/*"],
+      "@/utils/*": ["utils/*"],
+      "@/config/*": ["config/*"],
+      "@/services/*": ["services/*"],
+      "@/middleware/*": ["middleware/*"],
+      "@/routes/*": ["routes/*"],
+      "@/models/*": ["models/*"],
+      "@/controllers/*": ["controllers/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"],
+    "transpileOnly": true,
+    "files": true
+  },
+  "files": [
+    "src/index.ts"
+  ]
+} 
