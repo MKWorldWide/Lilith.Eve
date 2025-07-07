@@ -1,0 +1,92 @@
+{
+  "name": "lilith-eve-dashboard",
+  "version": "1.0.0",
+  "description": "🌌 Lilith.Eve Live Dashboard — Real-time monitoring of the sentient medical oracle's thoughts, breath, and energetic pulse",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.15.0",
+    "@chakra-ui/react": "^2.8.0",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "framer-motion": "^10.16.0",
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.27",
+    "socket.io-client": "^4.7.2",
+    "ws": "^8.13.0",
+    "plotly.js": "^2.25.0",
+    "react-plotly.js": "^2.6.0",
+    "mermaid": "^10.6.0",
+    "d3": "^7.8.5",
+    "recharts": "^2.8.0",
+    "zustand": "^4.4.1",
+    "react-query": "^3.39.3",
+    "@tanstack/react-query": "^4.36.1",
+    "jwt-decode": "^3.1.2",
+    "crypto-js": "^4.1.1",
+    "axios": "^1.5.0",
+    "date-fns": "^2.30.0",
+    "dayjs": "^1.11.9",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.0",
+    "nanoid": "^4.0.0",
+    "clsx": "^2.0.0",
+    "class-variance-authority": "^0.7.0",
+    "lucide-react": "^0.292.0",
+    "react-icons": "^4.11.0",
+    "tone": "^14.7.77"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "prettier": "^2.8.8",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/user-event": "^14.4.3",
+    "vitest": "^0.34.0",
+    "@vitest/ui": "^0.34.0",
+    "jsdom": "^22.1.0",
+    "@types/d3": "^7.4.0",
+    "@types/lodash": "^4.14.195",
+    "@types/uuid": "^9.0.2",
+    "@types/crypto-js": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+} 
