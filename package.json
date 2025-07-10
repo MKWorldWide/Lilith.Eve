@@ -113,6 +113,15 @@
     "axios": "^1.5.0",
     "node-fetch": "^3.3.2",
     
+    // Notion Integration
+    "@notionhq/client": "^2.2.14",
+    "notion-client": "^1.0.0",
+    
+    // Voice and Audio
+    "openai": "^4.20.0",
+    "node-speaker": "^0.5.4",
+    "wav": "^1.0.2",
+    
     // NLP and text processing
     "natural": "^6.8.0",
     "compromise": "^14.9.0",
