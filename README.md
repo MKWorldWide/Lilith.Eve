@@ -126,6 +126,8 @@ const lilith = new LilithEve({
 - Subconscious pattern recognition
 - Integration with psychological treatment plans
 
+## 🈺 Google Translation Service Integration
+A lightweight `GoogleTranslateService` enables translation via Google Cloud. Configure `GOOGLE_CLOUD_API_KEY` (or `GOOGLE_TRANSLATE_API_KEY`) in your `.env` file.
 ## 📚 **Documentation**
 
 - 📖 [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system design
