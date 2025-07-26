@@ -616,12 +616,18 @@ export interface HolisticaConfig {
 }
 
 // ============================================================================
+// SPIRITUAL & TRAUMA TYPES
+// ============================================================================
+
+export * from './spiritual';
+
+// ============================================================================
 // UTILITY TYPES
 // ============================================================================
 
-export type AnalysisStatus = 'pending' | 'processing' | 'completed' | 'failed';
-export type TreatmentStatus = 'draft' | 'active' | 'paused' | 'completed' | 'cancelled';
-export type ConsentStatus = 'granted' | 'denied' | 'partial' | 'expired';
+export type AnalysisStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
+export type TreatmentStatus = 'draft' | 'active' | 'paused' | 'completed' | 'archived';
+export type ConsentStatus = 'granted' | 'denied' | 'revoked' | 'expired';
 export type CulturalSensitivity = 'high' | 'moderate' | 'low';
 export type EvidenceLevel = 'strong' | 'moderate' | 'weak' | 'anecdotal';
 export type RiskLevel = 'low' | 'moderate' | 'high' | 'critical';

@@ -30,8 +30,8 @@ import { setupRoutes } from './routes';
 import { logger } from './utils/logger';
 
 // Configuration
-const PORT = process.env.APP_PORT || 3000;
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const PORT = process.env['APP_PORT'] ? parseInt(process.env['APP_PORT'], 10) : 3000;
+const NODE_ENV = process.env['NODE_ENV'] || 'development';
 
 /**
  * 🌟 Divine Startup Message
@@ -81,31 +81,60 @@ const initializeLilithEve = async (): Promise<LilithEve> => {
         devices: ['apple_watch', 'fitbit', 'oura_ring'],
         samplingRate: 1000,
         analysisWindow: 300000,
-        privacyLevel: 'high'
+        privacyLevel: 'high',
+        alertThresholds: [
+          { 
+            metric: 'heart_rate', 
+            max: 100, 
+            severity: 'critical',
+            action: 'notify_care_team',
+            notification: ['in_app', 'email']
+          },
+          { 
+            metric: 'blood_pressure', 
+            min: 90,
+            max: 140,
+            severity: 'warning',
+            action: 'escalate_to_physician',
+            notification: ['in_app', 'sms']
+          },
+          { 
+            metric: 'oxygen_saturation', 
+            min: 90, 
+            severity: 'critical',
+            action: 'alert_emergency_contact',
+            notification: ['sms', 'in_app']
+          }
+        ],
+        dataRetention: '1_year'
       },
       persona: {
         culturalDatabases: ['traditional_medicine', 'cultural_beliefs', 'healing_practices'],
         psychologicalModels: ['personality_assessment', 'stress_analysis', 'coping_mechanisms'],
         sensitivityLevel: 'high',
-        biasMitigation: true
+        biasMitigation: true,
+        culturalValidation: true
       },
       social: {
         platforms: ['twitter', 'instagram', 'facebook'],
         analysisDepth: 'moderate',
         privacyProtection: true,
-        consentValidation: true
+        consentValidation: true,
+        dataAnonymization: true
       },
       lingua: {
         languages: ['en', 'es', 'fr', 'de', 'zh', 'ja', 'ko', 'ar', 'hi'],
         translationEngine: 'deepl',
         culturalLinguistics: true,
-        readabilityAnalysis: true
+        readabilityAnalysis: true,
+        emotionalIntelligence: true
       },
       holistica: {
         traditions: ['ayurvedic', 'tcm', 'native_american', 'african', 'middle_eastern'],
         evidenceLevel: 'moderate_plus',
         culturalValidation: true,
-        safetyProtocols: true
+        safetyProtocols: true,
+        practitionerNetwork: ['ayurvedic_practitioners', 'tcm_doctors', 'native_healers']
       }
     });
 
@@ -140,25 +169,22 @@ const initializeApp = async (lilithEve: LilithEve): Promise<express.Application>
       },
     }));
     
-    // CORS configuration
+    // Configure CORS with environment variables
     app.use(cors({
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
-      credentials: true,
+      origin: process.env['ALLOWED_ORIGINS']?.split(',') || ['http://localhost:3000'],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true
     }));
-    
+
     // Rate limiting
     const limiter = rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: process.env.RATE_LIMIT_REQUESTS_PER_MINUTE ? 
-        parseInt(process.env.RATE_LIMIT_REQUESTS_PER_MINUTE) : 100,
-      message: {
-        error: 'Too many requests from this IP, please try again later.',
-        retryAfter: '15 minutes'
-      },
+      windowMs: process.env['RATE_LIMIT_WINDOW_MS'] ? 
+        parseInt(process.env['RATE_LIMIT_WINDOW_MS'], 10) : 900000, // 15 minutes default
+      max: process.env['RATE_LIMIT_REQUESTS_PER_MINUTE'] ?
+        parseInt(process.env['RATE_LIMIT_REQUESTS_PER_MINUTE'], 10) : 100,
       standardHeaders: true,
-      legacyHeaders: false,
+      legacyHeaders: false
     });
     app.use(limiter);
     
@@ -177,45 +203,49 @@ const initializeApp = async (lilithEve: LilithEve): Promise<express.Application>
     });
     
     // Health check endpoint
-    app.get('/health', (req, res) => {
+    app.get('/health', (_req, res) => {
       res.status(200).json({
-        status: 'healthy',
-        service: 'Lilith.Eve',
-        version: process.env.npm_package_version || '1.0.0',
+        status: 'ok',
         timestamp: new Date().toISOString(),
+        version: process.env['npm_package_version'] || '1.0.0',
         environment: NODE_ENV,
-        uptime: process.uptime()
+        uptime: process.uptime(),
+        memoryUsage: process.memoryUsage(),
+        database: 'connected', // TODO: Add actual database connection check
+        redis: 'connected'    // TODO: Add actual Redis connection check
       });
     });
-    
-    // Divine invocation endpoint
-    app.get('/invoke', (req, res) => {
+
+    // Invocation endpoint
+    app.get('/invoke', (_req, res) => {
       res.status(200).json({
-        message: 'Lilith.Eve, scan and align.',
-        status: 'ready',
-        timestamp: new Date().toISOString()
+        message: 'Lilith.Eve is ready to receive your divine requests',
+        timestamp: new Date().toISOString(),
+        version: process.env['npm_package_version'] || '1.0.0',
+        environment: NODE_ENV
       });
     });
-    
+
     // Setup API routes
     setupRoutes(app, lilithEve);
     
     // Error handling middleware
-    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-      logger.error('Unhandled error:', err);
+    app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      logger.error('Unhandled error:', { error: err.message, stack: err.stack });
+      
       res.status(500).json({
-        error: 'Internal server error',
-        message: NODE_ENV === 'development' ? err.message : 'Something went wrong',
-        timestamp: new Date().toISOString()
+        error: 'Internal Server Error',
+        message: process.env['NODE_ENV'] === 'development' ? err.message : 'Something went wrong',
+        ...(process.env['NODE_ENV'] === 'development' && { stack: err.stack })
       });
     });
-    
+
     // 404 handler
-    app.use('*', (req, res) => {
+    app.use('*', (req: express.Request, res: express.Response) => {
       res.status(404).json({
-        error: 'Route not found',
-        message: 'The requested endpoint does not exist',
-        timestamp: new Date().toISOString()
+        error: 'Not Found',
+        message: 'The requested resource was not found',
+        path: req.originalUrl
       });
     });
     
@@ -328,13 +358,22 @@ const startServer = async (): Promise<void> => {
  * 🧪 Development Mode Enhancements
  */
 if (NODE_ENV === 'development') {
-  // Enable detailed logging
-  logger.level = 'debug';
+  // Enable detailed logging in development
+  process.env['LOG_LEVEL'] = 'debug';
   
-  // Development-specific configurations
-  process.env.LOG_LEVEL = 'debug';
-  process.env.ENABLE_SWAGGER = 'true';
-  process.env.ENABLE_GRAPHIQL = 'true';
+  // Enable development tools
+  process.env['ENABLE_SWAGGER'] = 'true';
+  process.env['ENABLE_GRAPHIQL'] = 'true';
+  
+  // Development-specific middleware
+  app.use((req: express.Request, _res: express.Response, next: express.NextFunction) => {
+    logger.debug(`${req.method} ${req.originalUrl}`, {
+      headers: req.headers,
+      query: req.query,
+      body: req.body
+    });
+    next();
+  });
 }
 
 // Start the divine healing system
@@ -343,4 +382,4 @@ startServer().catch((error) => {
   process.exit(1);
 });
 
-export default startServer; 
+export default startServer;

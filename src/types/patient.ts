@@ -4,6 +4,39 @@
  * Core patient data structures and interfaces for Lilith.Eve
  */
 
+// Import types from spiritual module
+import {
+  SpiritualProfile,
+  TraumaProfile,
+  SoulBlueprint,
+  TraumaHistory,
+  AncestralLineage,
+  PastLifeMemory,
+  SoulContract,
+  KarmicPattern,
+  HealingTraditions as SpiritualHealingTraditions
+} from './spiritual';
+
+// Re-export spiritual types for external use
+export * from './spiritual';
+
+/**
+ * Healing Traditions
+ * 
+ * Extends the base HealingTraditions interface with additional patient-specific fields
+ */
+export interface PatientHealingTraditions extends Omit<SpiritualHealingTraditions, 'effectiveness'> {
+  traditional: HealingTradition[];
+  modern: HealingTradition[];
+  spiritual: HealingTradition[];
+  effectiveness: {
+    tradition: string;
+    effectiveness: number; // 1-10 scale
+    sideEffects: string[];
+    notes: string;
+  }[];
+}
+
 export interface PatientProfile {
   id: string;
   demographics: Demographics;
@@ -14,6 +47,9 @@ export interface PatientProfile {
   emergencyContacts?: EmergencyContact[];
   createdAt: string;
   updatedAt: string;
+  spiritualProfile?: SpiritualProfile;
+  traumaProfile?: TraumaProfile;
+  soulBlueprint?: SoulBlueprint;
 }
 
 export interface Demographics {
@@ -41,6 +77,7 @@ export interface MedicalHistory {
   lifestyle: LifestyleFactors;
   mentalHealth: MentalHealthHistory;
   reproductiveHealth?: ReproductiveHealth;
+  traumaHistory?: TraumaHistory;
 }
 
 export interface Medication {
@@ -112,6 +149,16 @@ export interface MentalHealthHistory {
   hospitalizations: string[];
   currentSymptoms: string[];
   copingStrategies: string[];
+  traumaResponses?: {
+    type: 'fight' | 'flight' | 'freeze' | 'fawn';
+    triggers: string[];
+    somaticResponses: string[];
+  }[];
+  spiritualCrises?: {
+    type: string;
+    description: string;
+    resolution: string;
+  }[];
 }
 
 export interface ReproductiveHealth {
@@ -138,7 +185,11 @@ export interface CulturalContext {
   communicationPreference: 'compassionate' | 'clinical' | 'cultural' | 'educational';
   familyDynamics: FamilyDynamics;
   communitySupport: CommunitySupport;
-  healingTraditions: HealingTradition[];
+  healingTraditions: PatientHealingTraditions;
+  ancestralLineage?: AncestralLineage;
+  pastLifeMemories?: PastLifeMemory[];
+  soulContracts?: SoulContract[];
+  karmicPatterns?: KarmicPattern[];
 }
 
 export interface CulturalBelief {
@@ -164,11 +215,74 @@ export interface CommunitySupport {
 }
 
 export interface HealingTradition {
-  tradition: string;
+  name: string;
+  type: 'traditional' | 'modern' | 'spiritual' | 'alternative' | 'integrated';
+  description: string;
   practices: string[];
   practitioners: string[];
   accessibility: 'high' | 'moderate' | 'low';
   culturalRelevance: 'high' | 'moderate' | 'low';
+  evidenceBase: 'anecdotal' | 'emerging' | 'established' | 'well_established';
+  certificationRequirements?: string[];
+  potentialRisks?: string[];
+  contraindications?: string[];
+  resourceIntensity: 'low' | 'moderate' | 'high';
+  cost: 'low' | 'moderate' | 'high';
+  timeCommitment: string;
+  culturalOrigins: string[];
+  keyPrinciples?: string[];
+  trainingRequired?: string;
+  regulatoryStatus?: 'approved' | 'experimental' | 'alternative' | 'unregulated';
+  insuranceCoverage?: 'none' | 'partial' | 'full';
+  researchStatus?: 'limited' | 'growing' | 'extensive';
+  integrationPotential: number; // 1-10 scale
+  patientSatisfaction?: number; // 1-10 scale
+  providerAvailability: 'rare' | 'limited' | 'available' | 'widespread';
+  culturalAcceptance: 'controversial' | 'emerging' | 'accepted' | 'mainstream';
+  safetyProfile: 'unknown' | 'low_risk' | 'moderate_risk' | 'high_risk';
+  evidenceQuality: 'low' | 'moderate' | 'high';
+  mechanismOfAction?: string;
+  typicalDuration?: string;
+  frequencyRecommendation?: string;
+  selfAdministered: boolean;
+  requiresSpecialist: boolean;
+  complementaryTo: string[];
+  conflictsWith?: string[];
+  licensingRequirements?: string[];
+  culturalAdaptations?: {
+    culture: string;
+    adaptation: string;
+    effectiveness: number; // 1-10 scale
+  }[];
+  outcomeMeasures?: string[];
+  successMetrics?: string[];
+  trainingPrograms?: {
+    name: string;
+    duration: string;
+    certification: string;
+    accreditation?: string;
+  }[];
+  ethicalConsiderations?: string[];
+  culturalSensitivity: 'low' | 'moderate' | 'high';
+  accessibilityConsiderations?: string[];
+  costEffectiveness?: 'low' | 'moderate' | 'high';
+  scalability: 'low' | 'moderate' | 'high';
+  sustainability: 'low' | 'moderate' | 'high';
+  communityPerception: 'negative' | 'neutral' | 'positive';
+  regulatoryBarriers?: string[];
+  implementationChallenges?: string[];
+  successStories?: {
+    description: string;
+    outcome: string;
+    evidenceLevel: 'anecdotal' | 'case_study' | 'clinical_trial' | 'meta_analysis';
+  }[];
+  references?: {
+    title: string;
+    author: string;
+    year: number;
+    type: 'book' | 'journal' | 'study' | 'report' | 'website';
+    url?: string;
+  }[];
 }
 
 export interface ConsentSettings {

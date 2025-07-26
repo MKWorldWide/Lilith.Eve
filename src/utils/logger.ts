@@ -91,17 +91,17 @@ const createLogger = () => {
   const transports: winston.transport[] = [];
 
   // Console transport for development
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] === 'development') {
     transports.push(
       new winston.transports.Console({
-        level: process.env.LOG_LEVEL || 'debug',
+        level: process.env['LOG_LEVEL'] || 'debug',
         format: consoleFormat
       })
     );
   }
 
   // File transports for production
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env['NODE_ENV'] === 'production') {
     // Error logs
     transports.push(createFileTransport('error', 'error'));
     
@@ -112,7 +112,7 @@ const createLogger = () => {
     transports.push(createFileTransport('http', 'http'));
     
     // Debug logs (if enabled)
-    if (process.env.LOG_LEVEL === 'debug') {
+    if (process.env['LOG_LEVEL'] === 'debug') {
       transports.push(createFileTransport('debug', 'debug'));
     }
   }
@@ -122,7 +122,7 @@ const createLogger = () => {
   transports.push(createFileTransport('info', 'combined'));
 
   return winston.createLogger({
-    level: process.env.LOG_LEVEL || 'info',
+    level: process.env['LOG_LEVEL'] || 'info',
     levels: logLevels,
     format: structuredFormat,
     transports,

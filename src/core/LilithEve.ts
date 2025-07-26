@@ -20,23 +20,31 @@ import {
   TreatmentPlan, 
   HealingResponse,
   ModuleConfig,
-  CulturalContext,
   ConsentSettings
 } from '../types';
+import { PersonaAnalysisResult } from '../types/persona';
+import { DivineMemoryStore } from './DivineMemoryStore';
+import { logger } from '../utils/logger';
 
 export class LilithEve {
-  private cognitionAI: CognitionAI;
-  private bioSyncReader: BioSyncReader;
-  private personaScanner: PersonaScanner;
-  private socialSynth: SocialSynth;
-  private linguaCare: LinguaCare;
-  private holistica: Holistica;
+  // Module instances with definite assignment assertion
+  private cognitionAI!: CognitionAI;
+  private bioSyncReader!: BioSyncReader;
+  private personaScanner!: PersonaScanner;
+  private socialSynth!: SocialSynth;
+  private linguaCare!: LinguaCare;
+  private holistica!: Holistica;
   
-  private isInitialized: boolean = false;
   private activeModules: Set<string> = new Set();
+  private memoryStore: DivineMemoryStore;
 
   constructor(config: ModuleConfig = {}) {
+    // Initialize memory store
+    this.memoryStore = DivineMemoryStore.getInstance();
     this.initializeModules(config);
+    
+    // Set up graceful shutdown
+    this.setupGracefulShutdown();
   }
 
   /**
@@ -46,34 +54,60 @@ export class LilithEve {
    * cultural, and energetic patterns, then aligns treatment recommendations
    * with their unique healing journey.
    */
+  /**
+   * 🌟 Divine Invocation: "Lilith.Eve, scan and align"
+   * 
+   * Enhanced to integrate PersonaScanner for deep persona analysis and
+   * store insights in DivineMemoryStore for cross-session continuity.
+   */
   async scanAndAlign(patientProfile: PatientProfile): Promise<HealingResponse> {
+    const sessionId = `sess_${Date.now()}`;
+    logger.info('Initiating scan and align', { sessionId, patientId: patientProfile.id });
+    
     try {
-      // Validate patient profile and consent
+      // Validate patient profile and consent before proceeding
       this.validatePatientProfile(patientProfile);
       
       // Initialize analysis pipeline
       const analysisId = this.generateAnalysisId();
       
-      // Execute parallel module analysis
+      // Execute parallel module analysis including PersonaScanner
       const [
         medicalAnalysis,
         biometricPatterns,
-        personaInsights,
+        personaAnalysis,
         socialInsights,
         holisticOptions
       ] = await Promise.all([
         this.cognitionAI.analyzePatient(patientProfile),
         this.bioSyncReader.processBiometrics(patientProfile),
-        this.personaScanner.analyzeContext(patientProfile),
+        this.personaScanner.analyzePersona(),  // Using analyzePersona instead of analyzeContext
         this.socialSynth.analyzeBehavior(patientProfile),
         this.holistica.getRecommendations(patientProfile)
       ]);
+      
+      // Store persona analysis in DivineMemoryStore
+      await this.memoryStore.storeSession(sessionId, {
+        analysisId,
+        timestamp: new Date().toISOString(),
+        personaAnalysis,
+        patientId: patientProfile.id
+      });
+      
+      // Log archetypal resonance for future analysis
+      this.logArchetypalResonance(personaAnalysis);
 
-      // Synthesize comprehensive healing insights
+      // Synthesize comprehensive healing insights with enhanced persona data
       const synthesizedAnalysis = await this.synthesizeInsights({
         medical: medicalAnalysis,
         biometric: biometricPatterns,
-        persona: personaInsights,
+        persona: {
+          ...personaAnalysis,
+          traumaAnalysis: personaAnalysis.traumaAnalysis?.[0], // Flatten single-item array
+          spiritualLineage: personaAnalysis.spiritualLineage,
+          culturalAnalysis: personaAnalysis.culturalAnalysis,
+          psychologicalAnalysis: personaAnalysis.psychologicalAnalysis
+        },
         social: socialInsights,
         holistic: holisticOptions
       });
@@ -84,23 +118,43 @@ export class LilithEve {
         patientProfile
       );
 
-      // Adapt communication to patient's preferences
+      // Adapt communication to patient's preferences with persona insights
       const healingResponse = await this.linguaCare.adaptCommunication(
-        treatmentPlan,
-        patientProfile.culturalContext
+        {
+          ...treatmentPlan,
+          personaInsights: {
+            communicationProfile: personaAnalysis.communicationProfile,
+            healingPreferences: personaAnalysis.healingPreferences
+          }
+        },
+        {
+          ...patientProfile.culturalContext,
+          ...personaAnalysis.culturalAnalysis
+        }
       );
 
-      return {
+      // Generate final response with integrated persona insights
+      const response = {
         analysisId,
         timestamp: new Date().toISOString(),
         patientId: patientProfile.id,
         healingInsights: synthesizedAnalysis,
         treatmentPlan,
         communication: healingResponse,
-        culturalConsiderations: patientProfile.culturalContext,
+        culturalConsiderations: {
+          ...patientProfile.culturalContext,
+          ...personaAnalysis.culturalAnalysis
+        },
+        personaInsights: {
+          traumaPatterns: personaAnalysis.traumaAnalysis,
+          spiritualLineage: personaAnalysis.spiritualLineage,
+          psychologicalProfile: personaAnalysis.psychologicalAnalysis
+        },
         riskAssessment: await this.assessRisk(synthesizedAnalysis),
         nextSteps: this.generateNextSteps(treatmentPlan)
       };
+
+      return response;
 
     } catch (error) {
       console.error('Error in scanAndAlign:', error);
@@ -337,15 +391,38 @@ export class LilithEve {
   /**
    * 🔧 Utility methods for system management
    */
+  /**
+   * 🔄 Initialize all modules with configuration
+   */
   private initializeModules(config: ModuleConfig): void {
-    this.cognitionAI = new CognitionAI(config.cognition);
-    this.bioSyncReader = new BioSyncReader(config.bioSync);
-    this.personaScanner = new PersonaScanner(config.persona);
-    this.socialSynth = new SocialSynth(config.social);
-    this.linguaCare = new LinguaCare(config.lingua);
-    this.holistica = new Holistica(config.holistica);
+    logger.info('Initializing modules', { config });
     
-    this.isInitialized = true;
+    try {
+      this.cognitionAI = new CognitionAI(config.cognition || {});
+      this.bioSyncReader = new BioSyncReader(config.bioSync || {});
+      
+      // Initialize PersonaScanner with proper config
+      this.personaScanner = new PersonaScanner(
+        {} as PatientProfile, // Will be set in scanAndAlign
+        {
+          sensitivityLevel: 'medium',
+          biasMitigation: true,
+          culturalValidation: true
+        }
+      );
+      
+      this.activeModules.add('persona-scanner');
+      logger.debug('PersonaScanner initialized');
+      
+      this.socialSynth = new SocialSynth(config.social || {});
+      this.linguaCare = new LinguaCare(config.lingua || {});
+      this.holistica = new Holistica(config.holistica || {});
+      
+      logger.info('All modules initialized successfully');
+    } catch (error) {
+      logger.error('Failed to initialize modules', { error });
+      throw new Error(`Module initialization failed: ${error.message}`);
+    }
   }
 
   private validatePatientProfile(profile: PatientProfile): void {
@@ -362,10 +439,10 @@ export class LilithEve {
   }
 
   private validateConsent(consent: ConsentSettings): void {
-    const requiredConsents = [
-      'medical_analysis',
-      'data_processing',
-      'treatment_planning'
+    const requiredConsents: (keyof ConsentSettings)[] = [
+      'medicalAnalysis',
+      'dataProcessing',
+      'treatmentPlanning'
     ];
     
     for (const consentType of requiredConsents) {
@@ -373,6 +450,138 @@ export class LilithEve {
         throw new Error(`Consent required for: ${consentType}`);
       }
     }
+  }
+  
+  /**
+   * Handles graceful shutdown of the LilithEve instance
+   */
+  /**
+   * Process soul-aligned recommendations at session close
+   */
+  private async processSessionClose(): Promise<void> {
+    try {
+      // Get the current session ID (you might need to track this in your class)
+      const currentSessionId = this.getCurrentSessionId();
+      
+      if (!currentSessionId) {
+        logger.warn('No active session found during shutdown');
+        return;
+      }
+
+      // Retrieve the persona analysis from the memory store
+      const sessionData = await this.memoryStore.getSession(currentSessionId);
+      
+      if (!sessionData?.personaAnalysis) {
+        logger.warn('No persona analysis found for current session');
+        return;
+      }
+
+      // Generate soul-aligned recommendations
+      const recommendations = await this.personaScanner.generateSoulAlignedRecommendations(
+        sessionData.patientId ? { id: sessionData.patientId } : { id: 'unknown' }
+      );
+
+      // Store the recommendations in the memory store
+      await this.memoryStore.storeSession(currentSessionId, {
+        ...sessionData,
+        soulAlignedRecommendations: recommendations,
+        sessionEnd: new Date().toISOString()
+      });
+
+      logger.info('Soul-aligned recommendations generated and stored', {
+        sessionId: currentSessionId,
+        recommendationCount: recommendations.length
+      });
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error('Error processing session close', { 
+        error: errorMessage,
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      // Don't rethrow to allow shutdown to continue
+    }
+  }
+
+  /**
+   * Handles graceful shutdown of the LilithEve instance
+   */
+  private setupGracefulShutdown(): void {
+    const shutdown = async (signal: string) => {
+      logger.info(`Received ${signal}. Shutting down gracefully...`);
+      
+      try {
+        // Process session close and generate soul-aligned recommendations
+        await this.processSessionClose();
+        
+        // Close any open connections or cleanup resources
+        await this.memoryStore?.disconnect();
+        
+        logger.info('Graceful shutdown complete');
+        process.exit(0);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        logger.error('Error during shutdown', { 
+          error: errorMessage,
+          stack: error instanceof Error ? error.stack : undefined
+        });
+        process.exit(1);
+      }
+    };
+
+    // Handle different shutdown signals
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+    
+    // Handle uncaught exceptions
+    process.on('uncaughtException', async (error) => {
+      logger.error('Uncaught exception', { 
+        error: error.message,
+        stack: error.stack 
+      });
+      
+      try {
+        await this.processSessionClose();
+      } catch (e) {
+        // Ignore errors during emergency session close
+      }
+      
+      process.exit(1);
+    });
+  }
+  
+  /**
+   * Logs archetypal resonance patterns for future analysis
+   */
+  private logArchetypalResonance(analysis: PersonaAnalysisResult): void {
+    try {
+      const resonanceData = {
+        timestamp: new Date().toISOString(),
+        patientId: analysis.patientId,
+        traumaPatterns: analysis.traumaAnalysis?.map(t => t.type) || [],
+        spiritualArchetypes: analysis.spiritualLineage?.archetypes || [],
+        karmicThemes: analysis.spiritualLineage?.karmicPatterns?.map(k => k.theme) || []
+      };
+      
+      logger.info('Archetypal resonance logged', { resonanceData });
+      // Could also store in analytics database or similar
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error('Failed to log archetypal resonance', { error: errorMessage });
+    }
+  }
+
+  /**
+   * Get the current session ID
+   * This is a simplified implementation - you might want to track the current session ID
+   * in your class properties or retrieve it from a request context
+   */
+  private getCurrentSessionId(): string | null {
+    // In a real implementation, you might get this from:
+    // 1. A class property that's set when a session starts
+    // 2. A request context (if running in a web server)
+    // 3. A session management service
+    return null; // Return null if no active session
   }
 
   private generateAnalysisId(): string {
