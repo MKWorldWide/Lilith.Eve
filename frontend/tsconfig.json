@@ -32,7 +32,8 @@
       "@store/*": ["./src/store/*"],
       "@services/*": ["./src/services/*"],
       "@styles/*": ["./src/styles/*"],
-      "@assets/*": ["./src/assets/*"]
+      "@assets/*": ["./src/assets/*"],
+      "@context/*": ["./src/context/*"]
     },
 
     /* Additional options */
