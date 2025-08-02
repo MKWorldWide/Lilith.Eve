@@ -7,6 +7,8 @@ import { useAuth } from '@hooks/useAuth'
 import Sidebar from '@components/Sidebar'
 import Header from '@components/Header'
 import LoadingSpinner from '@components/LoadingSpinner'
+import { SilkyFlow } from '@components/SilkyFlow'
+import { useSecretGesture } from '@hooks/useSecretGesture'
 
 /**
  * Main App Component
@@ -22,6 +24,7 @@ import LoadingSpinner from '@components/LoadingSpinner'
  */
 const App: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth()
+  useSecretGesture()
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -46,16 +49,18 @@ const App: React.FC = () => {
         
         {/* Main Content */}
         <Box flex="1" overflow="auto" p={6}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/patients" element={<div>Patients Page</div>} />
-            <Route path="/analysis" element={<div>Analysis Page</div>} />
-            <Route path="/treatments" element={<div>Treatments Page</div>} />
-            <Route path="/monitoring" element={<div>Monitoring Page</div>} />
-            <Route path="/admin" element={<div>Admin Page</div>} />
-            <Route path="*" element={<div>404 - Page Not Found</div>} />
-          </Routes>
+          <SilkyFlow>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/patients" element={<div>Patients Page</div>} />
+              <Route path="/analysis" element={<div>Analysis Page</div>} />
+              <Route path="/treatments" element={<div>Treatments Page</div>} />
+              <Route path="/monitoring" element={<div>Monitoring Page</div>} />
+              <Route path="/admin" element={<div>Admin Page</div>} />
+              <Route path="*" element={<div>404 - Page Not Found</div>} />
+            </Routes>
+          </SilkyFlow>
         </Box>
       </Flex>
     </Flex>

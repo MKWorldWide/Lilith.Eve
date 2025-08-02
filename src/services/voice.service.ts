@@ -58,6 +58,27 @@ export class VoiceService extends EventEmitter {
       volume: 0.9,
       style: 'resonant',
       description: 'Resonant, rhythmic, trance-inducing with musical cadence'
+    },
+    lilituMurmur: {
+      speed: 0.95,
+      pitch: 0.85,
+      volume: 0.7,
+      style: 'whisper',
+      description: "Gentle whisper inspired by Lilitú's legends"
+    },
+    evesGenesis: {
+      speed: 1.0,
+      pitch: 1.0,
+      volume: 0.8,
+      style: 'narrative',
+      description: "Warm, inviting voice with maternal resonance"
+    },
+    sophiasReflection: {
+      speed: 1.05,
+      pitch: 1.1,
+      volume: 0.75,
+      style: 'crystalline',
+      description: 'Clear tone with ethereal echo for introspective dialogues'
     }
   }
 
