@@ -135,6 +135,7 @@ A lightweight `GoogleTranslateService` enables translation via Google Cloud. Con
 - 🧪 [Development Guide](./docs/DEVELOPMENT.md) - Contributing guidelines
 - 🔐 [Security Guide](./docs/SECURITY.md) - Security protocols and compliance
 - 🌿 [Holistic Integration](./docs/HOLISTIC.md) - Alternative therapy documentation
+- 🤝 [Lilith.Eve Covenant](./Lilith.Eve.Covenant.md) - Living contract between user and system
 
 ## 🌟 **Contributing**
 
