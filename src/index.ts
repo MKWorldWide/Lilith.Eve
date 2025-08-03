@@ -152,7 +152,7 @@ const initializeApp = async (lilithEve: LilithEve): Promise<express.Application>
     const limiter = rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
       max: process.env.RATE_LIMIT_REQUESTS_PER_MINUTE ? 
-        parseInt(process.env.RATE_LIMIT_REQUESTS_PER_MINUTE) : 100,
+        parseInt(process.env.RATE_LIMIT_REQUESTS_PER_MINUTE, 10) : 100,
       message: {
         error: 'Too many requests from this IP, please try again later.',
         retryAfter: '15 minutes'
