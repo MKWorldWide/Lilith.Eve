@@ -1,3 +1,8 @@
+---
+layout: default
+title: Lilith.Eve Architecture Guide
+---
+
 # 🏛️ **Lilith.Eve Architecture Guide**
 
 > *"The divine blueprint of consciousness and healing"*
@@ -371,6 +376,8 @@ graph TB
 - **Causal Inference**: Understanding treatment causality
 - **Multimodal AI**: Integration of text, image, and sensor data
 
+*Last updated: 2025-08-03*
+
 ---
 
-*"In the architecture of Lilith.Eve, every component serves the divine purpose of healing, guided by wisdom, compassion, and technological excellence."* 
+*"In the architecture of Lilith.Eve, every component serves the divine purpose of healing, guided by wisdom, compassion, and technological excellence."*

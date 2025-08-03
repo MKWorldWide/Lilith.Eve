@@ -10,6 +10,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import { randomUUID } from 'crypto';
 import { logger } from '../../utils/logger';
 import { AuthenticatedRequest } from '../../types/auth.types';
 
@@ -225,7 +226,8 @@ export const securityLogger = (req: Request, res: Response, next: NextFunction):
  * Generate unique request ID
  */
 function generateRequestId(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  // Use cryptographically strong UUID to avoid predictable IDs
+  return `req_${randomUUID()}`;
 }
 
 /**
@@ -249,13 +251,22 @@ function sanitizeHeaders(headers: any): any {
  */
 function sanitizeData(data: any): any {
   if (!data) return data;
-  
-  const sanitized = JSON.parse(JSON.stringify(data));
+
+  let sanitized: any;
+  try {
+    // Deep clone while stripping functions and non-serializable data
+    sanitized = JSON.parse(JSON.stringify(data));
+  } catch (err) {
+    // Fallback prevents logging from crashing on circular structures
+    logger.warn('Failed to sanitize data', { error: (err as Error).message });
+    return {};
+  }
+
   const sensitiveFields = ['password', 'token', 'secret', 'key', 'ssn', 'credit_card'];
-  
+
   function sanitizeObject(obj: any): any {
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         if (typeof obj[key] === 'object' && obj[key] !== null) {
           sanitizeObject(obj[key]);
         } else if (sensitiveFields.some(field => key.toLowerCase().includes(field))) {
@@ -264,7 +275,7 @@ function sanitizeData(data: any): any {
       }
     }
   }
-  
+
   sanitizeObject(sanitized);
   return sanitized;
 }
