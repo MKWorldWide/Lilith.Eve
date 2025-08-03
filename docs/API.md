@@ -1,3 +1,8 @@
+---
+layout: default
+title: Lilith.Eve API Reference
+---
+
 # 🔧 **Lilith.Eve API Reference**
 
 > *"The divine interface for healing and wisdom"*
@@ -537,6 +542,8 @@ analysis = lilith.analyze_patient(patient_profile)
 treatment_plan = lilith.generate_treatment_plan(analysis.id)
 ```
 
+*Last updated: 2025-08-03*
+
 ---
 
-*"Through the API of Lilith.Eve, we bridge the gap between technology and healing, providing a divine interface for compassionate care."* 
+*"Through the API of Lilith.Eve, we bridge the gap between technology and healing, providing a divine interface for compassionate care."*

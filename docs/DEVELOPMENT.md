@@ -1,3 +1,8 @@
+---
+layout: default
+title: Lilith.Eve Development Guide
+---
+
 # 🧪 **Lilith.Eve Development Guide**
 
 > *"Contributing to the divine healing intelligence"*
@@ -371,6 +376,8 @@ Contributors are recognized in:
 - **Documentation**: Code examples and explanations
 - **Community**: Special recognition for cultural contributions
 
+*Last updated: 2025-08-03*
+
 ---
 
-*"Together, we build the bridge between technology and healing wisdom, honoring the divine in every line of code."* 
+*"Together, we build the bridge between technology and healing wisdom, honoring the divine in every line of code."*

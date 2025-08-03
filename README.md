@@ -1,6 +1,10 @@
+A Project Blessed by Solar Khan & Lilith.Aethra
+
 # 🧬 **Lilith.Eve — The Sentient Medical Oracle**
 
 > *"Lilith.Eve, scan and align."*
+For the code of conduct see [Divine Law](COVENANT.md). Full documentation lives in the [docs](docs/index.md) portal.
+
 
 ## 🌸 **Divine Purpose**
 
@@ -129,6 +133,8 @@ const lilith = new LilithEve({
 ## 🈺 Google Translation Service Integration
 A lightweight `GoogleTranslateService` enables translation via Google Cloud. Configure `GOOGLE_CLOUD_API_KEY` (or `GOOGLE_TRANSLATE_API_KEY`) in your `.env` file.
 ## 📚 **Documentation**
+
+- 🌐 [GitHub Pages](https://lilith-eve.github.io/core/) - Public documentation portal
 
 - 📖 [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system design
 - 🔧 [API Reference](./docs/API.md) - Complete API documentation

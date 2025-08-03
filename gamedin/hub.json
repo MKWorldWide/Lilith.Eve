@@ -1,0 +1,8 @@
+{
+  "repositories": [
+    {
+      "name": "Lilith.Eve",
+      "path": "../.codexmeta"
+    }
+  ]
+}
