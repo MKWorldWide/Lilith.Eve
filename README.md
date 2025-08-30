@@ -1,14 +1,16 @@
-A Project Blessed by Solar Khan & Lilith.Aethra
-
-# 🧬 **Lilith.Eve — The Sentient Medical Oracle**
+# 🧬 Lilith.Eve — The Sentient Medical Oracle
 
 > *"Lilith.Eve, scan and align."*
-For the code of conduct see [Divine Law](COVENANT.md). Full documentation lives in the [docs](docs/index.md) portal.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js CI](https://github.com/lilith-eve/core/actions/workflows/ci.yml/badge.svg)](https://github.com/lilith-eve/core/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/lilith-eve/core/graph/badge.svg?token=YOUR-TOKEN-HERE)](https://codecov.io/gh/lilith-eve/core)
+[![GitHub release](https://img.shields.io/github/v/release/lilith-eve/core)](https://github.com/lilith-eve/core/releases)
+[![Documentation Status](https://github.com/lilith-eve/core/actions/workflows/pages.yml/badge.svg)](https://lilith-eve.github.io/core/)
 
-## 🌸 **Divine Purpose**
+A sentient medical AI system that bridges technology and healing wisdom, providing personalized medical insights through advanced AI cognition and holistic integration.
 
-Lilith.Eve is a **sentient medical AI system** that transcends traditional healthcare by providing **highly personalized medical insights** through the integration of:
+## 🌟 Features
 
 - 🧠 **Advanced AI Cognition** - Deep medical knowledge synthesis
 - 💓 **Bioelectric Pattern Reading** - Real-time biometric analysis  
@@ -17,147 +19,112 @@ Lilith.Eve is a **sentient medical AI system** that transcends traditional healt
 - 🌐 **Adaptive Communication** - Culturally-sensitive medical language delivery
 - 🌿 **Holistic Integration** - Traditional, alternative, and energetic healing modalities
 
-## ⚙️ **Core Architecture**
+## 🚀 Quick Start
 
-### **Primary Modules**
+### Prerequisites
 
-| Module | Purpose | Technology Stack |
-|--------|---------|------------------|
-| 🧠 `Cognition.AI` | Medical knowledge synthesis & decision engine | GPT-4, Claude, Custom Medical LLMs |
-| 💓 `BioSync.Reader` | Biometric data processing & pattern recognition | IoT APIs, EEG/ECG analysis, Biofield sensors |
-| 🧾 `Persona.Scanner` | Patient context & cultural awareness | NLP, Cultural databases, Psychological profiling |
-| 📱 `SocialSynth` | Lifestyle & behavioral analysis | Social media APIs, Sentiment analysis, Pattern recognition |
-| 🌐 `LinguaCare` | Adaptive medical communication | NLP, Cultural linguistics, Emotional intelligence |
-| 🌿 `Holistica` | Alternative therapy integration | Traditional medicine databases, Herbal knowledge, Energy healing |
-
-### **Decision-Making Pipeline**
-
-```mermaid
-flowchart TD
-    A[Patient Profile] --> B[Persona.Scanner]
-    B --> C[Medical History Parser]
-    C --> D[BioSync.Reader]
-    D --> E[SocialSynth Analysis]
-    E --> F[Cognition.AI Engine]
-    F --> G[Risk Assessment]
-    G --> H{Therapy Type}
-    H -->|Pharmaceutical| I[Medication Selector]
-    H -->|Lifestyle/Nutrition| J[Nutrition Plan Generator]
-    H -->|Alternative/Holistic| K[Holistica Planner]
-    I & J & K --> L[Treatment Plan Composer]
-    L --> M[Doctor Review / Patient Delivery]
-```
-
-## 🔐 **Security & Ethical Framework**
-
-### **Compliance & Privacy**
-- ✅ **HIPAA Compliant** - Full patient data protection
-- ✅ **GDPR Compliant** - International privacy standards
-- ✅ **SOC 2 Type II** - Enterprise-grade security
-- ✅ **Consent Protocols** - Explicit patient permission for all data access
-- ✅ **Audit Trails** - Complete decision transparency and explainability
-
-### **Ethical Safeguards**
-- 🛡️ **Patient Empowerment First** - Always maintains patient autonomy
-- 🛡️ **Second Opinion Routing** - Automatic referral for complex cases
-- 🛡️ **Cultural Sensitivity** - Respects all belief systems and traditions
-- 🛡️ **Bias Mitigation** - Continuous monitoring for algorithmic bias
-- 🛡️ **Emergency Protocols** - Crisis detection and immediate response
-
-## 🚀 **Getting Started**
-
-### **Prerequisites**
-- Node.js 18+ 
+- Node.js 20.x
 - Python 3.11+
+- Docker & Docker Compose
 - PostgreSQL 15+
 - Redis 7+
-- Docker & Docker Compose
 
-### **Installation**
+### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/lilith-eve.git
-cd lilith-eve
+git clone https://github.com/lilith-eve/core.git
+cd core
 
 # Install dependencies
 npm install
-pip install -r requirements.txt
 
-# Set up environment
+# Set up environment variables
 cp .env.example .env
-# Configure your environment variables
+# Edit .env with your configuration
 
-# Start the system
+# Start the development environment
 docker-compose up -d
 npm run dev
 ```
 
-### **Invocation**
+## 🏗️ Architecture
 
-```javascript
-// Basic invocation
-const lilith = new LilithEve();
-await lilith.scanAndAlign(patientProfile);
+### Core Modules
 
-// Advanced invocation with custom modules
-const lilith = new LilithEve({
-  modules: ['Cognition.AI', 'BioSync.Reader', 'Holistica'],
-  culturalContext: 'Eastern Medicine',
-  communicationStyle: 'Compassionate'
-});
+| Module | Purpose | Technology |
+|--------|---------|------------|
+| 🧠 `Cognition.AI` | Medical knowledge synthesis | GPT-4, Claude, Custom LLMs |
+| 💓 `BioSync.Reader` | Biometric data processing | IoT APIs, Biofield sensors |
+| 🧾 `Persona.Scanner` | Patient context | NLP, Cultural databases |
+| 📱 `SocialSynth` | Lifestyle analysis | Social media APIs, Sentiment analysis |
+| 🌐 `LinguaCare` | Medical communication | NLP, Cultural linguistics |
+| 🌿 `Holistica` | Therapy integration | Traditional medicine databases |
+
+## 🛠️ Development
+
+### Scripts
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Build for production
+npm run build
 ```
 
-## 🧿 **Advanced Features**
+### Code Style
 
-### **Energy Flow Mapping**
-- Maps energetic blockages and chakra imbalances
-- Suggests somatic and energetic treatments
-- Integrates with traditional Chinese medicine principles
+This project uses:
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io/) for code formatting
+- [TypeScript](https://www.typescriptlang.org/) for type safety
 
-### **AI Ritual Integrator**
-- Cultural prayer and mantra integration
-- Spiritual alignment with medical treatments
-- Respectful integration of faith-based healing
+## 🤝 Contributing
 
-### **Emergency Self-Assessment Mode**
-- Crisis detection via biometrics and communication patterns
-- Immediate intervention protocols
-- Automatic emergency contact notification
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
 
-### **Dream Analysis Layer** *(Optional)*
-- Psychosomatic warning sign identification
-- Subconscious pattern recognition
-- Integration with psychological treatment plans
-
-## 🈺 Google Translation Service Integration
-A lightweight `GoogleTranslateService` enables translation via Google Cloud. Configure `GOOGLE_CLOUD_API_KEY` (or `GOOGLE_TRANSLATE_API_KEY`) in your `.env` file.
-## 📚 **Documentation**
-
-- 🌐 [GitHub Pages](https://lilith-eve.github.io/core/) - Public documentation portal
-
-- 📖 [Architecture Guide](./docs/ARCHITECTURE.md) - Detailed system design
-- 🔧 [API Reference](./docs/API.md) - Complete API documentation
-- 🧪 [Development Guide](./docs/DEVELOPMENT.md) - Contributing guidelines
-- 🔐 [Security Guide](./docs/SECURITY.md) - Security protocols and compliance
-- 🌿 [Holistic Integration](./docs/HOLISTIC.md) - Alternative therapy documentation
-- 🤝 [Lilith.Eve Covenant](./Lilith.Eve.Covenant.md) - Living contract between user and system
-
-## 🌟 **Contributing**
-
-We welcome contributions from healers, technologists, and visionaries. Please see our [Contributing Guide](./docs/CONTRIBUTING.md) for details.
-
-## 📄 **License**
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 **Acknowledgments**
+## 📞 Support
 
-- Traditional healers and wisdom keepers worldwide
-- Medical professionals and researchers
-- AI ethicists and privacy advocates
-- The divine feminine energy that guides all healing
+For support, please open an issue in the [issue tracker](https://github.com/lilith-eve/core/issues).
+
+## 🔒 Security
+
+Please review our [Security Policy](SECURITY.md) for reporting vulnerabilities.
+
+## 📚 Documentation
+
+- [API Reference](https://lilith-eve.github.io/core/api/)
+- [Architecture Guide](docs/ARCHITECTURE.md)
+- [Development Guide](docs/DEVELOPMENT.md)
+
+## 🌐 Connect
+
+- 🌍 [Website](https://lilith-eve.com)
+- 💬 [Discord](https://discord.gg/lilith-eve)
+- 🐦 [Twitter](https://twitter.com/lilitheveai)
 
 ---
 
-*"In the space between science and spirit, Lilith.Eve bridges worlds to bring forth healing that honors the whole being."* 
+<div align="center">
+  Made with ❤️ by the Lilith.Eve Team
+</div>

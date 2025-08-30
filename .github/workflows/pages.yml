@@ -1,0 +1,63 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate API documentation
+        run: |
+          npm install -g typedoc
+          npm run docs:generate
+
+      - name: Build site
+        run: |
+          mkdir -p site
+          # Copy API docs
+          cp -r docs/api site/
+          # Copy any other static files
+          [ -d docs/static ] && cp -r docs/static site/ || true
+          # Create index.html if it doesn't exist
+          [ ! -f site/index.html ] && echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./api/index.html"></head><body>Redirecting to <a href="./api/index.html">API Documentation</a>...</body></html>' > site/index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'site/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
