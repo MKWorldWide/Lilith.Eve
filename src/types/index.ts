@@ -683,12 +683,8 @@ export interface AuditEvent {
 }
 
 // ============================================================================
-// EXPORT ALL TYPES
+// EXPORTS
+// Keep exports limited to existing modules to avoid resolution errors during MVP.
 // ============================================================================
 
 export * from './patient';
-export * from './analysis';
-export * from './treatment';
-export * from './cultural';
-export * from './monitoring';
-export * from './communication'; 

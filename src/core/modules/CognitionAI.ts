@@ -8,7 +8,8 @@
  * personalized, evidence-based treatment recommendations.
  */
 
-import { PatientProfile, MedicalAnalysis } from '../../types/patient';
+import { PatientProfile } from '../../types/patient';
+import { MedicalAnalysis } from '../../types';
 import { 
   LLMConfig, 
   MedicalKnowledgeBase, 

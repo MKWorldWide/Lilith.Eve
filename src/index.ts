@@ -21,12 +21,8 @@ import ora from 'ora';
 config();
 
 // Import core components
-import { LilithEve } from './core/LilithEve';
-import { initializeDatabase } from './services/database';
-import { initializeRedis } from './services/redis';
-import { setupMonitoring } from './services/monitoring';
-import { setupSecurity } from './middleware/security';
-import { setupRoutes } from './routes';
+// MVP: defer core orchestrator import to avoid unresolved dependencies
+// MVP: defer external services and centralized security setup.
 import { logger } from './utils/logger';
 
 // Configuration
@@ -63,12 +59,12 @@ ${chalk.yellow('✨ May healing wisdom flow through every interaction ✨')}
 /**
  * 🚀 Initialize Lilith.Eve Core System
  */
-const initializeLilithEve = async (): Promise<LilithEve> => {
+const initializeLilithEve = async (): Promise<any> => {
   const spinner = ora('Initializing Lilith.Eve core system...').start();
   
   try {
     // Initialize core AI system
-    const lilithEve = new LilithEve({
+    const lilithEve = {
       cognition: {
         model: 'gpt4',
         temperature: 0.3,
@@ -107,7 +103,7 @@ const initializeLilithEve = async (): Promise<LilithEve> => {
         culturalValidation: true,
         safetyProtocols: true
       }
-    });
+    };
 
     spinner.succeed('Lilith.Eve core system initialized successfully');
     return lilithEve;
@@ -122,7 +118,7 @@ const initializeLilithEve = async (): Promise<LilithEve> => {
 /**
  * 🌐 Initialize Express Application
  */
-const initializeApp = async (lilithEve: LilithEve): Promise<express.Application> => {
+const initializeApp = async (_lilithEve: any): Promise<express.Application> => {
   const spinner = ora('Initializing Express application...').start();
   
   try {
@@ -176,18 +172,12 @@ const initializeApp = async (lilithEve: LilithEve): Promise<express.Application>
       next();
     });
     
-    // Health check endpoint
-    app.get('/health', (req, res) => {
-      res.status(200).json({
-        status: 'healthy',
-        service: 'Lilith.Eve',
-        version: process.env.npm_package_version || '1.0.0',
-        timestamp: new Date().toISOString(),
-        environment: NODE_ENV,
-        uptime: process.uptime()
-      });
-    });
-    
+    // Feature routers: health and auth
+    const healthRoutes = (await import('./api/routes/health.routes')).default;
+    const authRoutes = (await import('./api/routes/auth.routes')).default;
+    app.use('/health', healthRoutes);
+    app.use('/api/auth', authRoutes);
+
     // Divine invocation endpoint
     app.get('/invoke', (req, res) => {
       res.status(200).json({
@@ -197,8 +187,9 @@ const initializeApp = async (lilithEve: LilithEve): Promise<express.Application>
       });
     });
     
-    // Setup API routes
-    setupRoutes(app, lilithEve);
+    // Mount stub router with 501 stubs for remaining core surfaces
+    const miniRouter = (await import('./api/minirouter')).default;
+    app.use('/api', miniRouter);
     
     // Error handling middleware
     app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

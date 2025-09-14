@@ -4,7 +4,7 @@
 # ============================================================================
 # BUILD STAGE
 # ============================================================================
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -34,7 +34,7 @@ RUN npm run build
 # ============================================================================
 # PRODUCTION STAGE
 # ============================================================================
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -80,7 +80,7 @@ CMD ["./docker-entrypoint.sh"]
 # ============================================================================
 # DEVELOPMENT STAGE
 # ============================================================================
-FROM node:18-alpine AS development
+FROM node:20-alpine AS development
 
 # Set working directory
 WORKDIR /app
@@ -111,7 +111,7 @@ CMD ["npm", "run", "dev"]
 # ============================================================================
 # TESTING STAGE
 # ============================================================================
-FROM node:18-alpine AS testing
+FROM node:20-alpine AS testing
 
 # Set working directory
 WORKDIR /app

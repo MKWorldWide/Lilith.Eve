@@ -108,6 +108,70 @@ export class HealthController {
     }
   };
 
+  // Aliases to match routes
+  public readinessCheck = this.readiness;
+  public livenessCheck = this.liveness;
+  public redisHealth = async (req: Request, res: Response) => {
+    try {
+      const r = await this.healthService.getCacheHealth();
+      res.status(r.status === 'healthy' ? 200 : 503).json({ success: r.status === 'healthy', data: r, timestamp: new Date().toISOString() });
+    } catch (error) {
+      res.status(503).json({ success: false, message: 'Cache health check failed', timestamp: new Date().toISOString() });
+    }
+  };
+  public elasticsearchHealth = async (req: Request, res: Response) => {
+    try {
+      const r = await this.healthService.getElasticsearchHealth();
+      res.status(r.status === 'healthy' ? 200 : 503).json({ success: r.status === 'healthy', data: r, timestamp: new Date().toISOString() });
+    } catch (error) {
+      res.status(503).json({ success: false, message: 'Elasticsearch health check failed', timestamp: new Date().toISOString() });
+    }
+  };
+  public rabbitmqHealth = async (req: Request, res: Response) => {
+    try {
+      const r = await this.healthService.getQueueHealth();
+      res.status(r.status === 'healthy' ? 200 : 503).json({ success: r.status === 'healthy', data: r, timestamp: new Date().toISOString() });
+    } catch (error) {
+      res.status(503).json({ success: false, message: 'Queue health check failed', timestamp: new Date().toISOString() });
+    }
+  };
+  public aiServicesHealth = async (req: Request, res: Response) => {
+    try {
+      const r = await this.healthService.getAIHealth();
+      res.status(r.status === 'healthy' ? 200 : 503).json({ success: r.status === 'healthy', data: r, timestamp: new Date().toISOString() });
+    } catch (error) {
+      res.status(503).json({ success: false, message: 'AI services health check failed', timestamp: new Date().toISOString() });
+    }
+  };
+  public externalApisHealth = async (req: Request, res: Response) => {
+    try {
+      const r = await this.healthService.getExternalHealth();
+      res.status(r.status === 'healthy' ? 200 : 503).json({ success: r.status === 'healthy', data: r, timestamp: new Date().toISOString() });
+    } catch (error) {
+      res.status(503).json({ success: false, message: 'External APIs health check failed', timestamp: new Date().toISOString() });
+    }
+  };
+  public cpuHealth = async (req: Request, res: Response) => {
+    try {
+      const r = await this.healthService.getPerformanceHealth();
+      res.status(r.status === 'healthy' ? 200 : 503).json({ success: r.status === 'healthy', data: r, timestamp: new Date().toISOString() });
+    } catch (error) {
+      res.status(503).json({ success: false, message: 'CPU health check failed', timestamp: new Date().toISOString() });
+    }
+  };
+  public getVersion = async (req: Request, res: Response) => {
+    try { const r = await this.healthService.getVersion(); res.status(200).json({ success: true, data: r, timestamp: new Date().toISOString() }); } catch (e) { res.status(500).json({ success: false, message: 'Failed to retrieve version information', timestamp: new Date().toISOString() }); }
+  };
+  public getConfigStatus = async (req: Request, res: Response) => {
+    try { const r = await this.healthService.getConfigHealth(); res.status(r.status === 'healthy' ? 200 : 503).json({ success: r.status === 'healthy', data: r, timestamp: new Date().toISOString() }); } catch (e) { res.status(503).json({ success: false, message: 'Configuration health check failed', timestamp: new Date().toISOString() }); }
+  };
+  public getMetrics = async (req: Request, res: Response) => {
+    try { const r = await this.healthService.getSystemMetrics(); res.status(200).json({ success: true, data: r, timestamp: new Date().toISOString() }); } catch (e) { res.status(500).json({ success: false, message: 'Failed to retrieve system metrics', timestamp: new Date().toISOString() }); }
+  };
+  public getSystemStatus = async (req: Request, res: Response) => {
+    try { const r = await this.healthService.getDependenciesHealth(); res.status(r.status === 'healthy' ? 200 : 503).json({ success: r.status === 'healthy', data: r, timestamp: new Date().toISOString() }); } catch (e) { res.status(503).json({ success: false, message: 'Dependencies health check failed', timestamp: new Date().toISOString() }); }
+  };
+
   /**
    * System liveness check
    */
