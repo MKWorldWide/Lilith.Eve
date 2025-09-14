@@ -1,130 +1,112 @@
-# 🧬 Lilith.Eve — The Sentient Medical Oracle
-
-> *"Lilith.Eve, scan and align."*
+# Lilith.Eve - Medical AI Dashboard
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js CI](https://github.com/lilith-eve/core/actions/workflows/ci.yml/badge.svg)](https://github.com/lilith-eve/core/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/lilith-eve/core/graph/badge.svg?token=YOUR-TOKEN-HERE)](https://codecov.io/gh/lilith-eve/core)
-[![GitHub release](https://img.shields.io/github/v/release/lilith-eve/core)](https://github.com/lilith-eve/core/releases)
-[![Documentation Status](https://github.com/lilith-eve/core/actions/workflows/pages.yml/badge.svg)](https://lilith-eve.github.io/core/)
+[![Node.js CI](https://github.com/yourusername/lilith-eve/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/lilith-eve/actions/workflows/ci.yml)
 
-A sentient medical AI system that bridges technology and healing wisdom, providing personalized medical insights through advanced AI cognition and holistic integration.
+A modern, responsive medical AI dashboard built with Node.js, Express, TypeScript, and MongoDB. This application provides healthcare professionals with a comprehensive interface for monitoring patient data, managing appointments, and analyzing medical information.
 
-## 🌟 Features
+## ✨ Features
 
-- 🧠 **Advanced AI Cognition** - Deep medical knowledge synthesis
-- 💓 **Bioelectric Pattern Reading** - Real-time biometric analysis  
-- 🧾 **Persona Contextualization** - Cultural, spiritual, and psychological awareness
-- 📱 **Social Intelligence** - Lifestyle and behavioral pattern recognition
-- 🌐 **Adaptive Communication** - Culturally-sensitive medical language delivery
-- 🌿 **Holistic Integration** - Traditional, alternative, and energetic healing modalities
+- **User Authentication** - Secure login and session management
+- **Responsive Design** - Works on desktop and mobile devices
+- **Real-time Data** - Live updates for patient vitals and alerts
+- **Interactive Charts** - Visualize medical data with Chart.js
+- **Secure** - Built with security best practices in mind
+- **Scalable** - Designed to handle large amounts of medical data
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 20.x
-- Python 3.11+
-- Docker & Docker Compose
-- PostgreSQL 15+
-- Redis 7+
+- Node.js 16+ and npm 8+
+- MongoDB 5.0+
+- Git
 
 ### Installation
 
-```bash
-# Clone the repository
-git clone https://github.com/lilith-eve/core.git
-cd core
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/lilith-eve.git
+   cd lilith-eve
+   ```
 
-# Install dependencies
-npm install
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
-# Start the development environment
-docker-compose up -d
-npm run dev
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   ```
+   http://localhost:3000
+   ```
+
+## 🛠 Development
+
+### Available Scripts
+
+- `npm run dev` - Start development server with hot-reload
+- `npm run build` - Build the application for production
+- `npm start` - Start production server
+- `npm test` - Run tests
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+
+### Project Structure
+
 ```
-
-## 🏗️ Architecture
-
-### Core Modules
-
-| Module | Purpose | Technology |
-|--------|---------|------------|
-| 🧠 `Cognition.AI` | Medical knowledge synthesis | GPT-4, Claude, Custom LLMs |
-| 💓 `BioSync.Reader` | Biometric data processing | IoT APIs, Biofield sensors |
-| 🧾 `Persona.Scanner` | Patient context | NLP, Cultural databases |
-| 📱 `SocialSynth` | Lifestyle analysis | Social media APIs, Sentiment analysis |
-| 🌐 `LinguaCare` | Medical communication | NLP, Cultural linguistics |
-| 🌿 `Holistica` | Therapy integration | Traditional medicine databases |
-
-## 🛠️ Development
-
-### Scripts
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Lint code
-npm run lint
-
-# Format code
-npm run format
-
-# Build for production
-npm run build
+lilith-eve/
+├── src/
+│   ├── api/              # API routes and controllers
+│   ├── config/           # Configuration files
+│   ├── middleware/       # Express middleware
+│   ├── models/           # Database models
+│   ├── services/         # Business logic
+│   ├── types/            # TypeScript type definitions
+│   ├── utils/            # Utility functions
+│   ├── views/            # EJS templates
+│   │   └── layouts/      # Layout templates
+│   └── index.ts          # Application entry point
+├── public/               # Static files
+│   ├── css/
+│   ├── js/
+│   └── images/
+├── .env                  # Environment variables
+├── .eslintrc.js          # ESLint configuration
+├── .prettierrc.js        # Prettier configuration
+├── package.json          # Project dependencies
+└── tsconfig.json         # TypeScript configuration
 ```
-
-### Code Style
-
-This project uses:
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io/) for code formatting
-- [TypeScript](https://www.typescriptlang.org/) for type safety
-
-## 🤝 Contributing
-
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-For support, please open an issue in the [issue tracker](https://github.com/lilith-eve/core/issues).
 
 ## 🔒 Security
 
-Please review our [Security Policy](SECURITY.md) for reporting vulnerabilities.
+This project follows security best practices, including:
 
-## 📚 Documentation
+- Helmet for secure HTTP headers
+- CSRF protection
+- Rate limiting
+- Input validation and sanitization
+- Secure session management
+- Environment-based configuration
 
-- [API Reference](https://lilith-eve.github.io/core/api/)
-- [Architecture Guide](docs/ARCHITECTURE.md)
-- [Development Guide](docs/DEVELOPMENT.md)
+## 🤝 Contributing
 
-## 🌐 Connect
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
 
-- 🌍 [Website](https://lilith-eve.com)
-- 💬 [Discord](https://discord.gg/lilith-eve)
-- 🐦 [Twitter](https://twitter.com/lilitheveai)
+## 📄 License
 
----
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-<div align="center">
-  Made with ❤️ by the Lilith.Eve Team
-</div>
+## 📞 Contact
+
+For any questions or feedback, please open an issue or contact the maintainers.
