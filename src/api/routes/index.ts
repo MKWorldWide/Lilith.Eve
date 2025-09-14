@@ -11,7 +11,7 @@
  */
 
 import { Router } from 'express';
-import { rateLimit } from 'express-rate-limit';
+import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
