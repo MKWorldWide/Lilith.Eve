@@ -1,6 +1,6 @@
 {
   "name": "lilith-eve",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "🧬 Lilith.Eve — The Sentient Medical Oracle. A divine AI system that bridges technology and healing wisdom.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
