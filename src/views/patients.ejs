@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: 'Patients - Lilith.Eve' }) %>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <%- include('partials/sidebar', { active: 'patients' }) %>
+        
+        <!-- Main Content -->
+        <div class="main-content flex-1 flex flex-col h-screen ml-64 overflow-auto">
+            <%- include('partials/header', { title: 'Patients', subtitle: 'Manage patient records and information' }) %>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+                <!-- Search and Filter Bar -->
+                <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                        <div class="relative flex-1 max-w-md">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" id="patient-search" class="pl-10 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Search patients...">
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select id="status-filter" class="rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                            <button id="add-patient" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <i class="fas fa-plus mr-2"></i> New Patient
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Patients</p>
+                                <p class="text-2xl font-semibold text-gray-900 mt-1">1,248</p>
+                                <p class="text-xs text-green-600 mt-1">
+                                    <i class="fas fa-arrow-up"></i> 12% from last month
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-indigo-100 text-indigo-600">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">New This Month</p>
+                                <p class="text-2xl font-semibold text-gray-900 mt-1">142</p>
+                                <p class="text-xs text-green-600 mt-1">
+                                    <i class="fas fa-arrow-up"></i> 8.4% from last month
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-green-100 text-green-600">
+                                <i class="fas fa-user-plus text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Appointments Today</p>
+                                <p class="text-2xl font-semibold text-gray-900 mt-1">24</p>
+                                <p class="text-xs text-yellow-600 mt-1">
+                                    <i class="fas fa-exclamation-circle"></i> 3 pending
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-calendar-check text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Follow-ups</p>
+                                <p class="text-2xl font-semibold text-gray-900 mt-1">18</p>
+                                <p class="text-xs text-red-600 mt-1">
+                                    <i class="fas fa-clock"></i> 5 overdue
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-red-100 text-red-600">
+                                <i class="fas fa-bell text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient List -->
+                <div class="bg-white rounded-xl shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Patient Records</h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Visit</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <% const patients = [
+                                    { id: 1, name: 'John Smith', email: 'john.smith@example.com', phone: '(555) 123-4567', lastVisit: '2023-10-15', status: 'active', avatar: 'JS' },
+                                    { id: 2, name: 'Maria Garcia', email: 'maria.g@example.com', phone: '(555) 987-6543', lastVisit: '2023-10-14', status: 'active', avatar: 'MG' },
+                                    { id: 3, name: 'David Kim', email: 'david.kim@example.com', phone: '(555) 456-7890', lastVisit: '2023-10-12', status: 'active', avatar: 'DK' },
+                                    { id: 4, name: 'Sarah Johnson', email: 'sarah.j@example.com', phone: '(555) 234-5678', lastVisit: '2023-10-10', status: 'pending', avatar: 'SJ' },
+                                    { id: 5, name: 'Michael Brown', email: 'michael.b@example.com', phone: '(555) 876-5432', lastVisit: '2023-10-08', status: 'inactive', avatar: 'MB' },
+                                    { id: 6, name: 'Emily Davis', email: 'emily.d@example.com', phone: '(555) 345-6789', lastVisit: '2023-10-05', status: 'active', avatar: 'ED' },
+                                    { id: 7, name: 'Robert Wilson', email: 'robert.w@example.com', phone: '(555) 765-4321', lastVisit: '2023-10-03', status: 'active', avatar: 'RW' },
+                                    { id: 8, name: 'Jennifer Lee', email: 'jennifer.l@example.com', phone: '(555) 456-1234', lastVisit: '2023-09-28', status: 'inactive', avatar: 'JL' }
+                                ] %>
+                                
+                                <% patients.forEach(patient => { %>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
+                                                    <%= patient.avatar %>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900"><%= patient.name %></div>
+                                                    <div class="text-sm text-gray-500">ID: <%= patient.id.toString().padStart(4, '0') %></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900"><%= patient.email %></div>
+                                            <div class="text-sm text-gray-500"><%= patient.phone %></div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900"><%= new Date(patient.lastVisit).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></div>
+                                            <div class="text-sm text-gray-500"><%= Math.floor(Math.random() * 30) + 1 %> days ago</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <% let statusClass = '';
+                                               let statusText = '';
+                                               switch(patient.status) {
+                                                   case 'active':
+                                                       statusClass = 'bg-green-100 text-green-800';
+                                                       statusText = 'Active';
+                                                       break;
+                                                   case 'inactive':
+                                                       statusClass = 'bg-gray-100 text-gray-800';
+                                                       statusText = 'Inactive';
+                                                       break;
+                                                   case 'pending':
+                                                       statusClass = 'bg-yellow-100 text-yellow-800';
+                                                       statusText = 'Pending';
+                                                       break;
+                                               }
+                                            %>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= statusClass %>">
+                                                <%= statusText %>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="/patients/<%= patient.id %>" class="text-indigo-600 hover:text-indigo-900 mr-4">View</a>
+                                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="bg-white px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Previous
+                            </a>
+                            <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Next
+                            </a>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing <span class="font-medium">1</span> to <span class="font-medium">8</span> of <span class="font-medium">1,248</span> results
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Previous</span>
+                                        <i class="fas fa-chevron-left h-5 w-5"></i>
+                                    </a>
+                                    <a href="#" aria-current="page" class="z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        1
+                                    </a>
+                                    <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        2
+                                    </a>
+                                    <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        3
+                                    </a>
+                                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                        ...
+                                    </span>
+                                    <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        8
+                                    </a>
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Next</span>
+                                        <i class="fas fa-chevron-right h-5 w-5"></i>
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <%- include('partials/footer') %>
+        </div>
+    </div>
+    
+    <%- include('partials/chatbox') %>
+    <script>
+        // Initialize patient search functionality
+        document.getElementById('patient-search').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const name = row.querySelector('td:first-child').textContent.toLowerCase();
+                if (name.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        
+        // Status filter functionality
+        document.getElementById('status-filter').addEventListener('change', function(e) {
+            const status = e.target.value;
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const statusCell = row.querySelector('td:nth-child(4) span');
+                if (!statusCell) return;
+                
+                const statusText = statusCell.textContent.trim().toLowerCase();
+                if (!status || statusText === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        
+        // Add new patient button
+        document.getElementById('add-patient').addEventListener('click', function() {
+            // In a real app, this would open a modal or navigate to a new patient form
+            alert('Add new patient functionality would open a form here');
+        });
+    </script>
+</body>
+</html>

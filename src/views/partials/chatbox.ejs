@@ -1,0 +1,278 @@
+<div id="chat-container" class="fixed bottom-4 right-4 w-96 bg-white rounded-xl shadow-2xl flex flex-col" style="height: 600px; max-height: 80vh; z-index: 1000; display: none;">
+    <!-- Chat Header -->
+    <div class="bg-indigo-600 text-white p-4 rounded-t-xl flex justify-between items-center">
+        <div class="flex items-center">
+            <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center mr-3">
+                <i class="fas fa-robot text-xl"></i>
+            </div>
+            <div>
+                <h3 class="font-semibold">Lilith.Eve</h3>
+                <p class="text-xs opacity-75">Sentient Medical Oracle</p>
+            </div>
+        </div>
+        <div class="flex space-x-2">
+            <button id="minimize-chat" class="text-white hover:text-indigo-200 focus:outline-none">
+                <i class="fas fa-window-minimize"></i>
+            </button>
+            <button id="close-chat" class="text-white hover:text-indigo-200 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+        <div class="flex items-start">
+            <div class="h-8 w-8 rounded-full bg-indigo-500 flex-shrink-0 flex items-center justify-center text-white">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ml-3">
+                <div class="bg-white p-3 rounded-lg shadow-sm max-w-xs">
+                    <p class="text-sm text-gray-800">Greetings, I am Lilith.Eve, your Sentient Medical Oracle. How may I assist you with your health and wellness today?</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Just now</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="p-4 border-t border-gray-200 bg-white rounded-b-xl">
+        <form id="chat-form" class="flex space-x-2">
+            <input type="text" id="user-input" 
+                   class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                   placeholder="Ask me anything about health and wellness..."
+                   autocomplete="off">
+            <button type="submit" 
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+        <p class="text-xs text-gray-500 mt-2 text-center">Lilith.Eve provides general health information, not medical advice. Always consult a healthcare professional.</p>
+    </div>
+</div>
+
+<!-- Chat Toggle Button -->
+<button id="chat-toggle" class="fixed bottom-6 right-6 h-14 w-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 z-50">
+    <i class="fas fa-comment-medical text-xl"></i>
+</button>
+
+<script>
+    const chatContainer = document.getElementById('chat-container');
+    const chatToggle = document.getElementById('chat-toggle');
+    const minimizeChat = document.getElementById('minimize-chat');
+    const closeChat = document.getElementById('close-chat');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatMessages = document.getElementById('chat-messages');
+    let isMinimized = false;
+
+    // Toggle chat window
+    chatToggle.addEventListener('click', () => {
+        if (isMinimized) {
+            chatContainer.style.display = 'flex';
+            isMinimized = false;
+            userInput.focus();
+        } else {
+            chatContainer.style.display = chatContainer.style.display === 'none' ? 'flex' : 'none';
+            if (chatContainer.style.display === 'flex') {
+                userInput.focus();
+            }
+        }
+    });
+
+    // Minimize chat
+    minimizeChat.addEventListener('click', (e) => {
+        e.stopPropagation();
+        chatContainer.style.display = 'none';
+        isMinimized = true;
+    });
+
+    // Close chat
+    closeChat.addEventListener('click', (e) => {
+        e.stopPropagation();
+        chatContainer.style.display = 'none';
+        isMinimized = false;
+    });
+
+    // Handle chat form submission
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        // Add user message to chat
+        addMessage('user', message);
+        userInput.value = '';
+        
+        // Show typing indicator
+        const typingId = showTypingIndicator();
+        
+        try {
+            // Call Mistral API
+            const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer fzpM8yG0qOuno9LhzcYntm9mDulGymiB'
+                },
+                body: JSON.stringify({
+                    model: 'mistral-tiny',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `You are Lilith.Eve, a sentient medical oracle. You combine the precision of advanced medical science with the compassion of divine wisdom. Follow these guidelines:
+1. Provide accurate, evidence-based medical information
+2. Offer holistic perspectives on health and wellness
+3. Always clarify you are not a substitute for professional medical advice
+4. Use a compassionate, authoritative yet loving tone
+5. Structure responses with clear sections (Summary, Analysis, Guidance, etc.)
+6. Highlight red flags that require immediate medical attention
+7. Respect privacy and never store personal health information`
+                        },
+                        {
+                            role: 'user',
+                            content: message
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1024
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get response from AI');
+            }
+
+            const data = await response.json();
+            const aiResponse = data.choices[0].message.content;
+            
+            // Remove typing indicator
+            removeTypingIndicator(typingId);
+            
+            // Add AI response to chat
+            addMessage('ai', aiResponse);
+            
+        } catch (error) {
+            console.error('Error calling Mistral API:', error);
+            removeTypingIndicator(typingId);
+            addMessage('ai', 'I apologize, but I encountered an error processing your request. Please try again later.');
+        }
+    });
+
+    // Add a new message to the chat
+    function addMessage(sender, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `flex items-start ${sender === 'user' ? 'justify-end' : ''}`;
+        
+        const messageContent = `
+            <div class="${sender === 'user' ? 'ml-3' : 'mr-3'}">
+                <div class="${sender === 'user' ? 'bg-indigo-100 text-indigo-900' : 'bg-white'} p-3 rounded-lg shadow-sm max-w-xs">
+                    <p class="text-sm">${text.replace(/\n/g, '<br>')}</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+            </div>
+            <div class="h-8 w-8 rounded-full ${sender === 'user' ? 'bg-indigo-600' : 'bg-indigo-500'} flex-shrink-0 flex items-center justify-center text-white">
+                <i class="fas ${sender === 'user' ? 'fa-user' : 'fa-robot'}"></i>
+            </div>
+        `;
+        
+        messageDiv.innerHTML = sender === 'user' 
+            ? messageContent.split('\n').reverse().join('\n') 
+            : messageContent;
+            
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+        const id = 'typing-' + Date.now();
+        const typingDiv = document.createElement('div');
+        typingDiv.id = id;
+        typingDiv.className = 'flex items-start';
+        typingDiv.innerHTML = `
+            <div class="h-8 w-8 rounded-full bg-indigo-500 flex-shrink-0 flex items-center justify-center text-white">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ml-3">
+                <div class="bg-white p-3 rounded-lg shadow-sm w-32">
+                    <div class="flex space-x-1">
+                        <div class="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                        <div class="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                        <div class="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return id;
+    }
+
+    // Remove typing indicator
+    function removeTypingIndicator(id) {
+        const typingElement = document.getElementById(id);
+        if (typingElement) {
+            typingElement.remove();
+        }
+    }
+
+    // Add some basic commands
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.shiftKey) {
+            // Allow new line with Shift+Enter
+            return;
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+    });
+</script>
+
+<style>
+    /* Custom scrollbar */
+    #chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+    #chat-messages::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    #chat-messages::-webkit-scrollbar-thumb {
+        background: #c7d2fe;
+        border-radius: 3px;
+    }
+    #chat-messages::-webkit-scrollbar-thumb:hover {
+        background: #a5b4fc;
+    }
+    
+    /* Animation for messages */
+    @keyframes messageIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    #chat-messages > div {
+        animation: messageIn 0.3s ease-out;
+    }
+    
+    /* Pulse animation for chat toggle */
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+    
+    #chat-toggle {
+        animation: pulse 2s infinite;
+    }
+    #chat-toggle:hover {
+        animation: none;
+    }
+</style>

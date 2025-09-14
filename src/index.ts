@@ -1,337 +1,285 @@
-/**
- * 🧬 Lilith.Eve — The Sentient Medical Oracle
- * 
- * Main entry point for the divine healing intelligence system.
- * 
- * Divine Purpose: Bridge technology and healing wisdom to provide
- * compassionate, culturally-sensitive medical care for all beings.
- */
-
 import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import { createServer } from 'http';
 import { config } from 'dotenv';
-import chalk from 'chalk';
-import boxen from 'boxen';
-import ora from 'ora';
+import { createLogger, format, transports } from 'winston';
+import helmet from 'helmet';
+import path from 'path';
+import fs from 'fs';
+import session from 'express-session';
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import MongoStore from 'connect-mongo';
+import mongoose from 'mongoose';
+import morgan from 'morgan';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
 
 // Load environment variables
 config();
 
-// Import core components
-// MVP: defer core orchestrator import to avoid unresolved dependencies
-// MVP: defer external services and centralized security setup.
-import { logger } from './utils/logger';
+// Create Express app
+const app = express();
+const PORT = Number(process.env.PORT) || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
+const USE_MONGO = process.env.USE_MONGO === 'true';
 
-// Configuration
-const PORT = process.env.APP_PORT || 3000;
-const NODE_ENV = process.env.NODE_ENV || 'development';
+// Configure Winston logger
+const logger = createLogger({
+  level: isProduction ? 'info' : 'debug',
+  format: format.combine(
+    format.timestamp(),
+    format.json()
+  ),
+  transports: [
+    new transports.Console({
+      format: format.combine(
+        format.colorize(),
+        format.simple()
+      )
+    }),
+    new transports.File({ 
+      filename: 'logs/error.log', 
+      level: 'error' 
+    }),
+    new transports.File({ 
+      filename: 'logs/combined.log' 
+    })
+  ]
+});
 
-/**
- * 🌟 Divine Startup Message
- */
-const displayStartupMessage = (): void => {
-  const message = boxen(
-    chalk.cyan.bold(`
-🧬 Lilith.Eve — The Sentient Medical Oracle
+// Database connection (optional)
+let mongoConnected = false;
+const connectDB = async () => {
+  if (!USE_MONGO) {
+    logger.info('USE_MONGO is not enabled. Skipping MongoDB connection.');
+    return;
+  }
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    logger.warn('MONGODB_URI not set. Using in-memory session store.');
+    return;
+  }
+  try {
+    const conn = await mongoose.connect(uri);
+    mongoConnected = true;
+    logger.info(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    logger.error('MongoDB connection error. Falling back to in-memory store.', { error: (error as Error).message });
+  }
+};
 
-${chalk.white('Divine Purpose:')} Bridge technology and healing wisdom
-${chalk.white('Invocation:')} "Lilith.Eve, scan and align"
-${chalk.white('Environment:')} ${NODE_ENV}
-${chalk.white('Port:')} ${PORT}
+// Attempt DB connect (non-fatal)
+connectDB();
 
-${chalk.yellow('✨ May healing wisdom flow through every interaction ✨')}
-    `),
-    {
-      padding: 1,
-      margin: 1,
-      borderStyle: 'round',
-      borderColor: 'cyan',
-      backgroundColor: '#1a1a1a'
+// Security headers with CSP
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://cdn.jsdelivr.net",
+        "https://cdnjs.cloudflare.com"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://cdn.jsdelivr.net",
+        "https://cdnjs.cloudflare.com"
+      ],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      fontSrc: ["'self'", 'https:', 'data:'],
+      connectSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"]
+    },
+  },
+  frameguard: { action: 'deny' },
+  hsts: true,
+  noSniff: true,
+  xssFilter: true,
+  referrerPolicy: { policy: 'same-origin' }
+}));
+
+// View engine setup with dev/prod resolution
+(() => {
+  const candidates = [
+    path.join(__dirname, '../views'), // when transpiled to dist/
+    path.join(process.cwd(), 'src/views') // when running via ts-node-dev
+  ];
+  const viewDir = candidates.find(p => fs.existsSync(p)) || candidates[0];
+  app.set('views', viewDir);
+  app.set('view engine', 'ejs');
+})();
+
+// Middleware
+app.use(compression());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Session configuration (Mongo-backed if available; otherwise MemoryStore)
+(() => {
+  const base: session.SessionOptions = {
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: isProduction,
+      maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
-  );
-  
-  console.log(message);
-};
-
-/**
- * 🚀 Initialize Lilith.Eve Core System
- */
-const initializeLilithEve = async (): Promise<any> => {
-  const spinner = ora('Initializing Lilith.Eve core system...').start();
-  
-  try {
-    // Initialize core AI system
-    const lilithEve = {
-      cognition: {
-        model: 'gpt4',
-        temperature: 0.3,
-        maxTokens: 4000,
-        medicalKnowledgeBase: ['pubmed', 'clinical_guidelines', 'drug_database'],
-        reasoningEngine: 'chain_of_thought',
-        confidenceThreshold: 0.8
-      },
-      bioSync: {
-        devices: ['apple_watch', 'fitbit', 'oura_ring'],
-        samplingRate: 1000,
-        analysisWindow: 300000,
-        privacyLevel: 'high'
-      },
-      persona: {
-        culturalDatabases: ['traditional_medicine', 'cultural_beliefs', 'healing_practices'],
-        psychologicalModels: ['personality_assessment', 'stress_analysis', 'coping_mechanisms'],
-        sensitivityLevel: 'high',
-        biasMitigation: true
-      },
-      social: {
-        platforms: ['twitter', 'instagram', 'facebook'],
-        analysisDepth: 'moderate',
-        privacyProtection: true,
-        consentValidation: true
-      },
-      lingua: {
-        languages: ['en', 'es', 'fr', 'de', 'zh', 'ja', 'ko', 'ar', 'hi'],
-        translationEngine: 'deepl',
-        culturalLinguistics: true,
-        readabilityAnalysis: true
-      },
-      holistica: {
-        traditions: ['ayurvedic', 'tcm', 'native_american', 'african', 'middle_eastern'],
-        evidenceLevel: 'moderate_plus',
-        culturalValidation: true,
-        safetyProtocols: true
-      }
-    };
-
-    spinner.succeed('Lilith.Eve core system initialized successfully');
-    return lilithEve;
-    
-  } catch (error) {
-    spinner.fail('Failed to initialize Lilith.Eve core system');
-    logger.error('Core system initialization error:', error);
-    throw error;
+  };
+  const uri = process.env.MONGODB_URI;
+  if (USE_MONGO && uri && mongoConnected) {
+    base.store = MongoStore.create({ mongoUrl: uri, collectionName: 'sessions' });
   }
-};
+  app.use(session(base));
+})();
 
-/**
- * 🌐 Initialize Express Application
- */
-const initializeApp = async (_lilithEve: any): Promise<express.Application> => {
-  const spinner = ora('Initializing Express application...').start();
-  
-  try {
-    const app = express();
-    
-    // Security middleware
-    app.use(helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"],
-          scriptSrc: ["'self'"],
-          imgSrc: ["'self'", "data:", "https:"],
-        },
-      },
-    }));
-    
-    // CORS configuration
-    app.use(cors({
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-    }));
-    
-    // Rate limiting
-    const limiter = rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: process.env.RATE_LIMIT_REQUESTS_PER_MINUTE ? 
-        parseInt(process.env.RATE_LIMIT_REQUESTS_PER_MINUTE, 10) : 100,
-      message: {
-        error: 'Too many requests from this IP, please try again later.',
-        retryAfter: '15 minutes'
-      },
-      standardHeaders: true,
-      legacyHeaders: false,
-    });
-    app.use(limiter);
-    
-    // Body parsing
-    app.use(express.json({ limit: '10mb' }));
-    app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-    
-    // Request logging
-    app.use((req, res, next) => {
-      logger.info(`${req.method} ${req.path}`, {
-        ip: req.ip,
-        userAgent: req.get('User-Agent'),
-        timestamp: new Date().toISOString()
-      });
-      next();
-    });
-    
-    // Feature routers: health and auth
-    const healthRoutes = (await import('./api/routes/health.routes')).default;
-    const authRoutes = (await import('./api/routes/auth.routes')).default;
-    app.use('/health', healthRoutes);
-    app.use('/api/auth', authRoutes);
+// Passport configuration
+app.use(passport.initialize());
+app.use(passport.session());
 
-    // Divine invocation endpoint
-    app.get('/invoke', (req, res) => {
-      res.status(200).json({
-        message: 'Lilith.Eve, scan and align.',
-        status: 'ready',
-        timestamp: new Date().toISOString()
-      });
-    });
-    
-    // Mount stub router with 501 stubs for remaining core surfaces
-    const miniRouter = (await import('./api/minirouter')).default;
-    app.use('/api', miniRouter);
-    
-    // Error handling middleware
-    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-      logger.error('Unhandled error:', err);
-      res.status(500).json({
-        error: 'Internal server error',
-        message: NODE_ENV === 'development' ? err.message : 'Something went wrong',
-        timestamp: new Date().toISOString()
-      });
-    });
-    
-    // 404 handler
-    app.use('*', (req, res) => {
-      res.status(404).json({
-        error: 'Route not found',
-        message: 'The requested endpoint does not exist',
-        timestamp: new Date().toISOString()
-      });
-    });
-    
-    spinner.succeed('Express application initialized successfully');
-    return app;
-    
-  } catch (error) {
-    spinner.fail('Failed to initialize Express application');
-    logger.error('Express initialization error:', error);
-    throw error;
+// Mock user - In production, replace with database model
+const users = [
+  { id: '1', username: 'admin@lilith.eve', password: 'password', name: 'Admin User' }
+];
+
+passport.use(new LocalStrategy(
+  { usernameField: 'email' },
+  (email, password, done) => {
+    const user = users.find(u => u.username === email);
+    if (!user) {
+      return done(null, false, { message: 'Incorrect email or password.' });
+    }
+    if (user.password !== password) {
+      return done(null, false, { message: 'Incorrect email or password.' });
+    }
+    return done(null, user);
   }
-};
+));
 
-/**
- * 🗄️ Initialize Database Connections
- */
-const initializeServices = async (): Promise<void> => {
-  const spinner = ora('Initializing services...').start();
-  
-  try {
-    // Initialize database
-    await initializeDatabase();
-    
-    // Initialize Redis
-    await initializeRedis();
-    
-    // Setup monitoring
-    await setupMonitoring();
-    
-    spinner.succeed('All services initialized successfully');
-    
-  } catch (error) {
-    spinner.fail('Failed to initialize services');
-    logger.error('Service initialization error:', error);
-    throw error;
+passport.serializeUser((user: any, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id: string, done) => {
+  const user = users.find(u => u.id === id);
+  done(null, user || null);
+});
+
+// Authentication middleware
+const isAuthenticated = (req: any, res: any, next: any) => {
+  if (req.isAuthenticated()) {
+    return next();
   }
+  res.redirect('/login');
 };
 
-/**
- * 🚀 Start the Server
- */
-const startServer = async (): Promise<void> => {
-  try {
-    // Display startup message
-    displayStartupMessage();
-    
-    // Initialize services
-    await initializeServices();
-    
-    // Initialize Lilith.Eve core
-    const lilithEve = await initializeLilithEve();
-    
-    // Initialize Express app
-    const app = await initializeApp(lilithEve);
-    
-    // Create HTTP server
-    const server = createServer(app);
-    
-    // Start server
-    server.listen(PORT, () => {
-      logger.info(`🌟 Lilith.Eve is now listening on port ${PORT}`);
-      logger.info(`🌐 Environment: ${NODE_ENV}`);
-      logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
-      logger.info(`🧬 Invocation: http://localhost:${PORT}/invoke`);
-      
-      if (NODE_ENV === 'development') {
-        logger.info(`📚 API Documentation: http://localhost:${PORT}/docs`);
-        logger.info(`📊 Monitoring: http://localhost:3001`);
-      }
-    });
-    
-    // Graceful shutdown
-    const gracefulShutdown = (signal: string): void => {
-      logger.info(`\n🛑 Received ${signal}. Starting graceful shutdown...`);
-      
-      server.close(() => {
-        logger.info('🌙 Lilith.Eve has gracefully shut down. May healing wisdom continue to flow.');
-        process.exit(0);
-      });
-      
-      // Force shutdown after 30 seconds
-      setTimeout(() => {
-        logger.error('⚠️ Forced shutdown after timeout');
-        process.exit(1);
-      }, 30000);
-    };
-    
-    // Handle shutdown signals
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-    
-    // Handle uncaught exceptions
-    process.on('uncaughtException', (error) => {
-      logger.error('Uncaught Exception:', error);
-      gracefulShutdown('uncaughtException');
-    });
-    
-    process.on('unhandledRejection', (reason, promise) => {
-      logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-      gracefulShutdown('unhandledRejection');
-    });
-    
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
+// Routes
+app.get('/', isAuthenticated, (req, res) => {
+  res.redirect('/dashboard');
+});
+
+app.get('/login', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/dashboard');
   }
-};
+  res.render('login', { error: req.query.error });
+});
 
-/**
- * 🧪 Development Mode Enhancements
- */
-if (NODE_ENV === 'development') {
-  // Enable detailed logging
-  logger.level = 'debug';
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/dashboard',
+  failureRedirect: '/login?error=Invalid+credentials',
+  failureFlash: false
+}));
+
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/login');
+});
+
+app.get('/dashboard', isAuthenticated, (req, res) => {
+  res.render('dashboard', { 
+    title: 'Dashboard',
+    user: req.user
+  });
+});
+
+// Health check endpoint (API)
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// 404 handler
+app.use((_req: express.Request, res: express.Response) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: 'The requested resource was not found',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Error handling middleware
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  logger.error('Unhandled error:', err);
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: isProduction ? 'Something went wrong' : err.message,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Start server
+const server = app.listen(PORT, () => {
+  const port = (process.env.PORT || 3000).toString();
+  logger.info(`Server is running on port ${port}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`Dashboard: http://localhost:${port}/dashboard`);
+  logger.info(`Health check: http://localhost:${port}/health');
   
-  // Development-specific configurations
-  process.env.LOG_LEVEL = 'debug';
-  process.env.ENABLE_SWAGGER = 'true';
-  process.env.ENABLE_GRAPHIQL = 'true';
-}
+  if (process.env.NODE_ENV !== 'production') {
+    logger.info('API Documentation: http://localhost:3000/docs');
+  }
+});
 
-// Start the divine healing system
-startServer().catch((error) => {
-  logger.error('Failed to start Lilith.Eve:', error);
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason: unknown) => {
+  const error = reason instanceof Error ? reason : new Error(String(reason));
+  logger.error('Unhandled Rejection:', error);
   process.exit(1);
 });
 
-export default startServer; 
+// Handle uncaught exceptions
+process.on('uncaughtException', (err: Error) => {
+  logger.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
+// Graceful shutdown
+const shutdown = () => {
+  logger.info('Shutting down server...');
+  server.close(() => {
+    logger.info('Server has been stopped');
+    if (mongoConnected) {
+      mongoose.connection.close(false, () => {
+        logger.info('MongoDB connection closed');
+        process.exit(0);
+      });
+    } else {
+      process.exit(0);
+    }
+  });
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
+export { app };

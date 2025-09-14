@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: 'Analytics - Lilith.Eve' }) %>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <%- include('partials/sidebar', { active: 'analytics' }) %>
+        
+        <!-- Main Content -->
+        <div class="main-content flex-1 flex flex-col h-screen ml-64 overflow-auto">
+            <%- include('partials/header', { 
+                title: 'Analytics Dashboard', 
+                subtitle: 'Key metrics and insights for your practice' 
+            }) %>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+                <!-- Date Range Selector -->
+                <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <h2 class="text-lg font-medium text-gray-900 mb-4 sm:mb-0">Performance Overview</h2>
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <select class="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option>Last 7 days</option>
+                                    <option>Last 30 days</option>
+                                    <option>Last 90 days</option>
+                                    <option>This year</option>
+                                    <option>Custom range</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                            <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <i class="fas fa-download mr-2"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Patients</p>
+                                <p class="text-2xl font-semibold text-gray-900 mt-1">1,248</p>
+                                <p class="text-xs text-green-600 mt-1">
+                                    <i class="fas fa-arrow-up"></i> 12% from last month
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-indigo-100 text-indigo-600">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Appointments</p>
+                                <p class="text-2xl font-semibold text-gray-900 mt-1">342</p>
+                                <p class="text-xs text-green-600 mt-1">
+                                    <i class="fas fa-arrow-up"></i> 8.4% from last month
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-green-100 text-green-600">
+                                <i class="fas fa-calendar-check text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Revenue</p>
+                                <p class="text-2xl font-semibold text-gray-900 mt-1">$24,589</p>
+                                <p class="text-xs text-green-600 mt-1">
+                                    <i class="fas fa-arrow-up"></i> 15.3% from last month
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-dollar-sign text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Avg. Rating</p>
+                                <p class="text-2xl font-semibold text-gray-900 mt-1">4.8</p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <i class="fas fa-star text-yellow-400"></i> from 128 reviews
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-purple-100 text-purple-600">
+                                <i class="fas fa-star text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Appointments Chart -->
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Appointments</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    This Month
+                                </span>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="appointmentsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Revenue Chart -->
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Revenue</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Last 6 Months
+                                </span>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Patient Demographics -->
+                    <div class="bg-white rounded-xl shadow p-6 lg:col-span-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Patient Demographics</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                    All Time
+                                </span>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="demographicsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Services -->
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-900">Top Services</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    This Month
+                                </span>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <% 
+                            const services = [
+                                { name: 'General Checkup', value: 124, change: '+12%' },
+                                { name: 'Dental Cleaning', value: 98, change: '+5%' },
+                                { name: 'Vaccination', value: 76, change: '+23%' },
+                                { name: 'Physical Exam', value: 65, change: '-2%' },
+                                { name: 'Blood Test', value: 43, change: '+8%' }
+                            ];
+                            
+                            services.forEach(service => {
+                                const width = (service.value / services[0].value) * 100;
+                            %>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="font-medium text-gray-900"><%= service.name %></span>
+                                        <span class="text-gray-500">
+                                            <%= service.value %> 
+                                            <span class="text-green-600"><%= service.change %></span>
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-indigo-600 h-2 rounded-full" style="width: <%= width %>%;"></div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Activity</h3>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <% 
+                        const activities = [
+                            { 
+                                type: 'appointment', 
+                                title: 'New appointment scheduled', 
+                                description: 'John Smith - Annual Checkup for Oct 15, 10:00 AM',
+                                time: '2 hours ago',
+                                icon: 'calendar-plus',
+                                color: 'bg-blue-100 text-blue-600'
+                            },
+                            { 
+                                type: 'payment', 
+                                title: 'Payment received', 
+                                description: '$150.00 from Maria Garcia for Consultation',
+                                time: '5 hours ago',
+                                icon: 'dollar-sign',
+                                color: 'bg-green-100 text-green-600'
+                            },
+                            { 
+                                type: 'patient', 
+                                title: 'New patient registered', 
+                                description: 'David Kim registered in the system',
+                                time: '1 day ago',
+                                icon: 'user-plus',
+                                color: 'bg-purple-100 text-purple-600'
+                            },
+                            { 
+                                type: 'prescription', 
+                                title: 'Prescription filled', 
+                                description: 'Lisinopril 10mg for Sarah Johnson',
+                                time: '2 days ago',
+                                icon: 'prescription-bottle-alt',
+                                color: 'bg-yellow-100 text-yellow-600'
+                            },
+                            { 
+                                type: 'test', 
+                                title: 'Lab results received', 
+                                description: 'Blood test results for Michael Brown',
+                                time: '3 days ago',
+                                icon: 'flask',
+                                color: 'bg-red-100 text-red-600'
+                            }
+                        ];
+                        
+                        activities.forEach(activity => {
+                        %>
+                            <div class="px-6 py-4 hover:bg-gray-50">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full <%= activity.color %> flex items-center justify-center">
+                                            <i class="fas fa-<%= activity.icon %>"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <p class="text-sm font-medium text-gray-900">
+                                                <%= activity.title %>
+                                            </p>
+                                            <div class="ml-2 flex-shrink-0 flex">
+                                                <p class="text-xs text-gray-500">
+                                                    <%= activity.time %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-500">
+                                            <%= activity.description %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-50 text-right">
+                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all activity</a>
+                    </div>
+                </div>
+            </main>
+            
+            <%- include('partials/footer') %>
+        </div>
+    </div>
+    
+    <%- include('partials/chatbox') %>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Appointments Chart
+        const appointmentsCtx = document.getElementById('appointmentsChart').getContext('2d');
+        const appointmentsChart = new Chart(appointmentsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                datasets: [{
+                    label: 'Appointments',
+                    data: [45, 52, 68, 59, 76, 65, 84, 78, 92, 87],
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [18500, 19750, 21300, 22450, 21800, 24589],
+                    backgroundColor: '#10b981',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Demographics Chart
+        const demographicsCtx = document.getElementById('demographicsChart').getContext('2d');
+        const demographicsChart = new Chart(demographicsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['18-25', '26-35', '36-45', '46-55', '56-65', '65+'],
+                datasets: [{
+                    data: [15, 25, 30, 18, 8, 4],
+                    backgroundColor: [
+                        '#4f46e5',
+                        '#6366f1',
+                        '#818cf8',
+                        '#a5b4fc',
+                        '#c7d2fe',
+                        '#e0e7ff'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

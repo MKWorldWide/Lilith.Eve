@@ -1,92 +1,61 @@
 {
   "compilerOptions": {
-    // Target and Module
-    "target": "ES2022",
+    /* Basic Options */
+    "target": "ES2020",
     "module": "commonjs",
-    "lib": ["ES2022", "DOM"],
-    "moduleResolution": "node",
-    
-    // Output
+    "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    /* Module Resolution */
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    
+    /* Type Checking */
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    /* Source Maps */
+    "sourceMap": true,
+    "inlineSourceMap": false,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "removeComments": false,
-    "noEmitOnError": true,
     
-    // Strict Type Checking
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noUncheckedIndexedAccess": true,
-    
-    // Additional Checks
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    
-    // Interop Constraints
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    
-    // Completeness
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "allowJs": false,
-    "checkJs": false,
-    
-    // Experimental Features
+    /* Experimental Options */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     
-    // Path Mapping
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"],
-      "@/core/*": ["core/*"],
-      "@/modules/*": ["core/modules/*"],
-      "@/types/*": ["types/*"],
-      "@/utils/*": ["utils/*"],
-      "@/config/*": ["config/*"],
-      "@/services/*": ["services/*"],
-      "@/middleware/*": ["middleware/*"],
-      "@/routes/*": ["routes/*"],
-      "@/models/*": ["models/*"],
-      "@/controllers/*": ["controllers/*"]
-    }
+    /* Advanced Options */
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   },
   "include": [
-    "src/index.ts",
-    "src/utils/**/*.ts",
-    "src/api/minirouter.ts",
-    "src/services/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "coverage",
     "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/__tests__/**",
-    "**/__mocks__/**"
-  ],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"],
-    "transpileOnly": true,
-    "files": true
-  },
-  "files": [
-    "src/index.ts"
+    "**/*.spec.ts"
   ]
-} 
+}
